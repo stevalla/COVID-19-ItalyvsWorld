@@ -117,6 +117,8 @@ def aggregate_data():
     world_shape = world.shape
 
     total = pd.DataFrame()
+    world = world[world['Country/Region'] != 'Italy']
+    removed = world_shape[0] - world.shape[0]
     for d in world['date'].unique():
         if d in italy['date'].unique():
             tmp = pd.concat([world[world['date'] == d], italy[italy['date'] == d]])
@@ -125,7 +127,7 @@ def aggregate_data():
             total = pd.concat([total, world[world['date'] == d]])
 
     assert italy_shape[1] == world_shape[1] == total.shape[1]
-    assert italy_shape[0] + world_shape[0] == total.shape[0]
+    assert italy_shape[0] + world_shape[0] - removed == total.shape[0]
     total.to_csv('{}total.csv'.format(data_dir), index=False)
 
 
