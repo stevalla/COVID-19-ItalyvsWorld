@@ -17,7 +17,7 @@ rm -f "$data_folder"/*.csv
 if [[ "$country" == "italy" ]]; then
     mkdir "$folder"/italy_data
     working_folder="$folder"/italy_data
-    wget -P "$working_folder" "$link"
+    wget -q -P "$working_folder" "$link"
 else
     working_folder="$folder"/csse_covid_19_time_series
     svn checkout "$link"

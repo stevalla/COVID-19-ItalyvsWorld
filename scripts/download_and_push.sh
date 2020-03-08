@@ -12,7 +12,7 @@ bash "$folder"/download_data.sh italy
 
 # aggregate italian and world
 echo "Aggregating"
-# python3 "$folder"/python/aggregate_data.py
+python3 -c "from python.preprocessing import aggregate_data; aggregate_data()"
 
 var=`date +"%FORMAT_STRING"`
 now=`date +"%m_%d_%Y"`
