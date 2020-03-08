@@ -1,19 +1,30 @@
 #!/usr/bin/env bash
 
 folder="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-data_folder="$folder"/csse_covid_19_time_series
-working_folder="$folder"/../data/world
+working_folder="$folder"/csse_covid_19_time_series
+data_folder="$folder"/../data/world
 
-rm "$working_folder"/*
+rm -f "$data_folder"/*.csv
 
 # Download new world data
 svn checkout https://github.com/CSSEGISandData/COVID-19/trunk/csse_covid_19_data/csse_covid_19_time_series
 
+date=
+
 # Copy to working folder
-cp "$data_folder"/*.csv "$folder"/../publication/world/
+cp "$working_folder"/*.csv "$data_folder"
 
 # Update data
-python3 "$folder"/world_preprocessing.py
+python3 "$folder"/python/world_preprocessing.py
+
 
 # Clean
-rm -r "$data_folder"
+mv "$data_folder"/*.csv "$data_folder"/history
+rm -r "$working_folder"
+rm -f "$data_folder"/*.csv
+
+# Commit new results
+git add "$folder"/../data/*
+git commit -m "Added new date $date"
+git push origin master
+

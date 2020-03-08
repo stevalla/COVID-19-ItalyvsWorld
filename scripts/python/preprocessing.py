@@ -4,12 +4,12 @@ import glob
 
 import pandas as pd
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def unify_data(world_csv_dir):
     try:
-        unified = pd.read_csv(world_csv_dir + '../world.csv')
+        unified = pd.read_csv(world_csv_dir + '../cleaned/world.csv')
     except FileNotFoundError:
         unified = None
     current_data = None
@@ -21,10 +21,9 @@ def unify_data(world_csv_dir):
         data = pd.read_csv(csv_file)
         time_series = data.iloc[:, 4:]
 
-        # drop lat, long and time_series
-        data.drop(columns=['Lat', 'Long'], inplace=True, axis=1)
+        # drop time_series
         data.drop(columns=time_series.columns, inplace=True, axis=1)
-        assert data.shape[1] == 2
+        assert data.shape[1] == 4
 
         if unified is not None:
             dates_to_add = (d for d in time_series.columns
@@ -32,7 +31,7 @@ def unify_data(world_csv_dir):
             time_series = time_series[dates_to_add]
 
         if not list(time_series.columns):
-            print("The data are up to date with those in publication/world")
+            print("The data are up to date with those in world")
             break
 
         new_data = reshape_data(time_series, data, file_type)
@@ -46,7 +45,7 @@ def unify_data(world_csv_dir):
             current_data[file_type] = new_data[file_type]
     # update data with current new data
     unified = pd.concat(([unified, current_data]))
-    unified.to_csv(world_csv_dir + '../world.csv')
+    unified.to_csv(world_csv_dir + '../cleaned/world.csv', index=False)
     return unified
 
 
