@@ -9,9 +9,9 @@ data_folder="$folder"/../data/"$country"
 # Read the date of today
 var=`date +"%FORMAT_STRING"`
 now=`date +"%m_%d_%Y"`
-today=`date +"%Y-%m-%d"`
+yesterday=`date -d "1 day ago" +"%Y-%m-%d"`
 
-rm -f "$data_folder"/*.csv
+rm -f "$data_folder"/*.csvk
 
 # Download new world data
 if [[ "$country" == "italy" ]]; then
@@ -29,8 +29,13 @@ cp "$working_folder"/*.csv "$data_folder"
 # Update data
 python3 "$folder"/python/preprocessing.py "$country"
 
-# Clean
-mv "$data_folder"/*.csv "$data_folder"/history
+# Store history
+for file in "$data_folder"/*.csv; do
+    filename=$(basename -- "$file")
+    f="${filename%.*}"
+    mv "$file" "$data_folder"/history/"$f"_"$yesterday".csv
+done
+
+# Cleaning
 rm -r "$working_folder"
 rm -f "$data_folder"/*.csv
-

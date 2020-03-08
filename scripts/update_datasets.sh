@@ -16,10 +16,10 @@ python3 -c "from python.preprocessing import aggregate_data; aggregate_data()"
 
 var=`date +"%FORMAT_STRING"`
 now=`date +"%m_%d_%Y"`
-today=`date +"%Y-%m-%d"`
+yesterday=`date -d "1 day ago" +"%Y-%m-%d"`
 
 # Commit new results
 git pull
 git add "$folder"/../data/*
-git commit -m "Added new date ${today}"
+git commit -m "Added new date ${yesterday}"
 git push origin master

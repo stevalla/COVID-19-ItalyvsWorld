@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import glob
+import datetime
 
 import pandas as pd
 
@@ -19,6 +20,7 @@ def unify_data(csv_dir, country, reshaper):
         if not re.search('^(.*).csv$', csv_file):
             continue
         data = pd.read_csv(csv_file)
+        _check_data(data, country)
         if country == 'world':
             args = (unified, data, csv_file, current_data)
         else:
@@ -31,6 +33,19 @@ def unify_data(csv_dir, country, reshaper):
     return unified
 
 
+def _check_data(data, country):
+    if country == 'italy':
+        columns = ['data', 'denominazione_regione', 'lat', 'long', 'deceduti',
+                    'totale_ospedalizzati', 'totale_attualmente_positivi']
+        assert data['data'][0] == '2020-02-24 18:00:00'
+
+    elif country == 'world':
+        columns = ['Province/State', 'Country/Region', 'Lat', 'Long']
+        assert '1/22/20' in data.columns
+
+    assert all(d in data.columns for d in columns)
+
+
 def reshape_italy_data(unified, data):
     mapping = {'Province/State': 'denominazione_regione',
                'Lat': 'lat', 'Long': 'long', 'date': 'data',
@@ -38,7 +53,7 @@ def reshape_italy_data(unified, data):
                'Confirmed': 'totale_attualmente_positivi',
                'Recovered': 'totale_ospedalizzati'}
 
-    dates = tuple(_convert_date(d) for d in data['data'])
+    dates = _convert_dates(data['data'])
     data = data[mapping.values()]
 
     if not unified.empty:
@@ -54,6 +69,13 @@ def reshape_italy_data(unified, data):
     new_data.insert(loc=1, column='Country/Region', value='Italy')
     new_data.insert(loc=4, column='date', value=dates)
     return new_data
+
+
+def _convert_dates(dates):
+    new_dates = []
+    for date in dates:
+        new_dates.append(_convert_date(date))
+    return new_dates
 
 
 def _convert_date(date):
@@ -113,21 +135,37 @@ def aggregate_data():
     data_dir = '{}/data/cleaned/'.format(ROOT_DIR)
     italy = pd.read_csv('{}italy.csv'.format(data_dir))
     world = pd.read_csv('{}world.csv'.format(data_dir))
+    all_dates = list(set(world['date']) | set(italy['date']))
+    all_dates.sort(key=lambda d: datetime.datetime.strptime(d, '%m/%d/%y'))
+
+    try:
+        total = pd.read_csv('{}../cleaned/total.csv'.format(data_dir))
+        all_dates = tuple(d for d in all_dates if d not in total['date'].unique()
+                          and d in world['date'])
+    except FileNotFoundError:
+        total = pd.DataFrame()
+
+    world_dates = tuple(d for d in all_dates if d in world['date'].unique())
+    italy_dates = tuple(d for d in all_dates if d in italy['date'].unique())
+
     italy_shape = italy.shape
     world_shape = world.shape
-
-    total = pd.DataFrame()
     world = world[world['Country/Region'] != 'Italy']
     removed = world_shape[0] - world.shape[0]
-    for d in world['date'].unique():
-        if d in italy['date'].unique():
+
+    for d in all_dates:
+        if d in italy_dates and d in world_dates:
             tmp = pd.concat([world[world['date'] == d], italy[italy['date'] == d]])
             total = pd.concat([total, tmp])
         else:
             total = pd.concat([total, world[world['date'] == d]])
 
     assert italy_shape[1] == world_shape[1] == total.shape[1]
-    assert italy_shape[0] + world_shape[0] - removed == total.shape[0]
+    try:
+        assert italy_shape[0] + world_shape[0] - removed == total.shape[0]
+    except AssertionError:
+        print('The total size seems to be not correct, check the dates of'
+              'italy and world csv, Italy may has one date more.')
     total.to_csv('{}total.csv'.format(data_dir), index=False)
 
 
