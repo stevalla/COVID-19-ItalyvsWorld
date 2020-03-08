@@ -1,9 +1,9 @@
 
 library(lubridate)
 
-world_death <- read.csv("C:\\Users\\aquilinoa\\Desktop\\covid19italia\\publication\\world\\time_series_19-covid-Deaths.csv")
-world_confirmed <- read.csv("C:\\Users\\aquilinoa\\Desktop\\covid19italia\\publication\\world\\time_series_19-covid-Confirmed.csv")
-world_recovered <- read.csv("C:\\Users\\aquilinoa\\Desktop\\covid19italia\\publication\\world\\time_series_19-covid-Recovered.csv")
+world_death <- read.csv("C:\\Users\\aquilinoa\\Desktop\\COVID-19-ItalyvsWorld\\data\\world\\history\\time_series_19-covid-Deaths.csv")
+world_confirmed <- read.csv("C:\\Users\\aquilinoa\\Desktop\\COVID-19-ItalyvsWorld\\data\\world\\history\\time_series_19-covid-Confirmed.csv")
+world_recovered <- read.csv("C:\\Users\\aquilinoa\\Desktop\\COVID-19-ItalyvsWorld\\data\\world\\history\\time_series_19-covid-Recovered.csv")
 
 province <- world_death[,1]
 country <- world_death[,2]
