@@ -6,3 +6,7 @@
 .idea/modules.xml
 .idea/vcs.xml
 /.idea/dictionaries/stev.xml
+/venv/
+.idea/other.xml
+.idea/rSettings.xml
+scripts/python/__pycache__/

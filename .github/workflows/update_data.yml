@@ -1,0 +1,47 @@
+name: Data update
+
+on:
+  schedule:
+    - cron:  '*/10 * * * *'
+
+jobs:
+  update:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ./scripts/python/requirements.txt
+      
+    # Runs a single command using the runners shell
+    - name: Update datasets
+      run: ./scripts/update_datasets.sh
+      working-directory: .
+    
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d' -d "1 day ago")"
+      
+    - name: Commit files
+      run: |
+        git config --local user.email "stefano.valladares12@gmail.com"
+        git config --local user.name "stevalla"
+        git add *
+        git commit -m "Added new data ${{steps.date.outputs.date}}"
+    
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+

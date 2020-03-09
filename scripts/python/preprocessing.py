@@ -53,9 +53,7 @@ def reshape_italy_data(unified, data):
                'Confirmed': 'totale_attualmente_positivi',
                'Recovered': 'totale_ospedalizzati'}
 
-    print(data['data'].shape)
     dates, d_mapping = _convert_dates(data['data'])
-
     data = data[mapping.values()]
 
     if not unified.empty:
@@ -149,7 +147,7 @@ def aggregate_data():
     try:
         total = pd.read_csv('{}../cleaned/total.csv'.format(data_dir))
         all_dates = tuple(d for d in all_dates if d not in total['date'].unique()
-                          and d in world['date'])
+                          and d in world['date'].unique())
     except FileNotFoundError:
         total = pd.DataFrame()
 
