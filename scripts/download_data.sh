@@ -4,14 +4,20 @@ country=$1
 
 folder="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 link=$(cat "$folder"/links | grep "$country" | sed "s/$country=\(.*\)/\1/g")
-data_folder="$folder"/../data/"$country"
+country_folder="$folder"/../data/"$country"
 
 # Read the date of today
 var=`date +"%FORMAT_STRING"`
 now=`date +"%m_%d_%Y"`
 yesterday=`date -d "1 day ago" +"%Y-%m-%d"`
+day==$(date -d "$yesterday" '+%d')
 
-rm -f "$data_folder"/*.csvk
+# Every 10 days download all the data to upgrade old data
+if [[ day % 10 == 0 ]]; then
+    rm "$folder"/../data/*.csv
+fi
+
+rm -f "$country_folder"/*.csvk
 
 # Download new world data
 if [[ "$country" == "italy" ]]; then
@@ -24,18 +30,18 @@ else
 fi
 
 # Copy to working folder
-cp "$working_folder"/*.csv "$data_folder"
+cp "$working_folder"/*.csv "$country_folder"
 
 # Update data
 python3 "$folder"/python/preprocessing.py "$country"
 
 # Store history
-for file in "$data_folder"/*.csv; do
+for file in "$country_folder"/*.csv; do
     filename=$(basename -- "$file")
     f="${filename%.*}"
-    mv "$file" "$data_folder"/history/"$f"_"$yesterday".csv
+    mv "$file" "$country_folder"/history/"$f"_"$yesterday".csv
 done
 
 # Cleaning
 rm -r "$working_folder"
-rm -f "$data_folder"/*.csv
+rm -f "$country_folder"/*.csv
