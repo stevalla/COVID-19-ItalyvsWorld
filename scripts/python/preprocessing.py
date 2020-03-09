@@ -53,15 +53,19 @@ def reshape_italy_data(unified, data):
                'Confirmed': 'totale_attualmente_positivi',
                'Recovered': 'totale_ospedalizzati'}
 
-    dates = _convert_dates(data['data'])
+    print(data['data'].shape)
+    dates, d_mapping = _convert_dates(data['data'])
+
     data = data[mapping.values()]
 
     if not unified.empty:
         dates = tuple(d for d in dates if d not in unified['date'].unique())
+        italy_dates = (d_i for d_w, d_i in d_mapping.items()
+                       if d_w not in unified['date'].unique())
         if not dates:
             print("The data are up to date with those in italy")
             return None
-        data = data.loc[data['data'] == dates]
+        data = data.loc[data['data'].isin(list(italy_dates))]
 
     del mapping['date']
 
@@ -73,12 +77,16 @@ def reshape_italy_data(unified, data):
 
 def _convert_dates(dates):
     new_dates = []
+    mapping = {}
     for date in dates:
-        new_dates.append(_convert_date(date))
-    return new_dates
+        w_date = _convert_date(date)
+        new_dates.append(w_date)
+        mapping[w_date] = date
+    return new_dates, mapping
 
 
 def _convert_date(date):
+    """From Italy format to world format. (Default)"""
     date = date.split(' ')[0].split('-')
     date[0] = date[0][2:]
     new_date = [int(d) for d in date]
@@ -164,7 +172,7 @@ def aggregate_data():
     try:
         assert italy_shape[0] + world_shape[0] - removed == total.shape[0]
     except AssertionError:
-        print('The total size seems to be not correct, check the dates of'
+        print('The total size seems to be not correct, check the dates of' 
               'italy and world csv, Italy may has one date more.')
     total.to_csv('{}total.csv'.format(data_dir), index=False)
 
