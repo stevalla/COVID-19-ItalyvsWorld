@@ -8,6 +8,6 @@ The data is updated daily, in the morning from two repositories:
 - Italy data: https://github.com/pcm-dpc/COVID-19
 <br>
 
-Our first intent is to practice on statistical analysis. We will focus firstly
-on only COVID data, and then we would like to add others data that is likely
-correlated with the virus, e.g. pollution and economic data.
+Our first intent is to practice on statistical analysis. At first, We will focus
+only on COVID data, then we would like to add other datasets that are likely
+correlated with the virus phenomena, e.g. pollution and economic data.
