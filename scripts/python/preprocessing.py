@@ -50,7 +50,7 @@ def _integer_with_nan(df, col):
 def _check_data(data, country):
     if country == 'italy':
         columns = ['data', 'denominazione_regione', 'lat', 'long', 'deceduti',
-                    'totale_ospedalizzati', 'totale_attualmente_positivi']
+                    'dimessi_guariti', 'totale_attualmente_positivi']
         assert data['data'][0] == '2020-02-24 18:00:00'
 
     elif country == 'world':
@@ -65,7 +65,7 @@ def reshape_italy_data(unified, data):
                'Lat': 'lat', 'Long': 'long', 'date': 'data',
                'Deaths': 'deceduti',
                'Confirmed': 'totale_attualmente_positivi',
-               'Recovered': 'totale_ospedalizzati'}
+               'Recovered': 'dimessi_guariti'}
 
     dates, d_mapping = _convert_dates(data['data'])
     data = data[mapping.values()]
