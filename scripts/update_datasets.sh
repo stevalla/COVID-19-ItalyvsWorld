@@ -12,4 +12,4 @@ bash "$folder"/download_data.sh italy
 
 # aggregate italian and world
 echo "Aggregating"
-python3 -c "import python.preprocessing as pr; pr.aggregate_data()"
+python3 -c "import scripts.python.preprocessing as pr; pr.aggregate_data()"
