@@ -25,7 +25,7 @@ if [[ "$country" == "italy" ]]; then
     working_folder="$folder"/italy_data
     wget -q -P "$working_folder" "$link"
 else
-    working_folder="$folder"/../csse_covid_19_time_series
+    working_folder="$folder"/csse_covid_19_time_series
     svn checkout "$link"
 fi
 

@@ -40,7 +40,7 @@ def unify_data(csv_dir, country, reshaper):
 
 def _integer_with_nan(df, col):
     df[col] = (df[col]
-                .fillna(0)
+                .fillna(-1)
                 .astype(int)
                 .astype(object)
                 .where(df[col].notnull()))
