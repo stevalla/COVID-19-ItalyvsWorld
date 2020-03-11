@@ -39,10 +39,7 @@ python3 "$folder"/python/preprocessing.py "$country"
 for file in "$country_folder"/*.csv; do
     filename=$(basename -- "$file")
     f="${filename%.*}"
-    echo "$file"
     mv "$file" "$country_folder"/history/"$f"_"$yesterday".csv
-    echo "Da qua"
-    ls "$country_folder"/history
 done
 
 # Cleaning

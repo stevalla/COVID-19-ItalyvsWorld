@@ -29,8 +29,22 @@ def unify_data(csv_dir, country, reshaper):
 
     # update data with current new data
     unified = pd.concat(([unified, current_data]))
-    unified.to_csv('{}../cleaned/{}.csv'.format(csv_dir, country), index=False)
+
+    for c in ['Confirmed', 'Recovered', 'Deaths']:
+        unified = _integer_with_nan(unified, c)
+
+    unified.to_csv('{}../cleaned/{}.csv'.format(csv_dir, country), index=False,
+                   float_format='%.5f')
     return unified
+
+
+def _integer_with_nan(df, col):
+    df[col] = (df[col]
+                .fillna(0)
+                .astype(int)
+                .astype(object)
+                .where(df[col].notnull()))
+    return df
 
 
 def _check_data(data, country):
@@ -66,7 +80,6 @@ def reshape_italy_data(unified, data):
         data = data.loc[data['data'].isin(list(italy_dates))]
 
     del mapping['date']
-
     new_data = pd.DataFrame({c: data[k] for c, k in mapping.items()})
     new_data.insert(loc=1, column='Country/Region', value='Italy')
     new_data.insert(loc=4, column='date', value=dates)
@@ -172,7 +185,11 @@ def aggregate_data():
     except AssertionError:
         print('The total size seems to be not correct, check the dates of' 
               'italy and world csv, Italy may has one date more.')
-    total.to_csv('{}total.csv'.format(data_dir), index=False)
+
+    for c in ['Confirmed', 'Recovered', 'Deaths']:
+        total = _integer_with_nan(total, c)
+    total.to_csv('{}total.csv'.format(data_dir), index=False,
+                 float_format='%.5f')
 
 
 if __name__ == '__main__':
