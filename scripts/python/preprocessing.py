@@ -49,6 +49,8 @@ def _integer_with_nan(df, col):
 
 def _check_data(data, country):
     if country == 'italy':
+        columns = ['data', 'denominazione_regione', 'lat', 'long', 'deceduti',
+                    'dimessi_guariti', 'totale_casi']
         assert data['data'][0] == '2020-02-24 18:00:00'
     elif country == 'world':
         columns = ['Province/State', 'Country/Region', 'Lat', 'Long']

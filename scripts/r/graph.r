@@ -87,7 +87,7 @@ dates <- rep(days,length(unique(table_final$areas)))
 table_final <- setDT(cbind.data.frame(dates,table_final))
 
 path_temp<-"results/graph"
-file_name <- paste("AAWorld_",format(today()-1, "%Y-%m-%d"), ".pdf", sep = "")
+file_name <- paste("World_",format(today()-1, "%Y-%m-%d"), ".pdf", sep = "")
 file_name <- file.path(getwd(), path_temp, file_name)
 # apro la connessione
 pdf(file_name,height=4,paper='special')
