@@ -91,7 +91,7 @@ table_final <- setDT(cbind.data.frame(dates,table_final))
 path_temp<-"results/graph"
 final_wd <- file.path(getwd(),path_temp)
 setwd(final_wd)
-file_name <- paste("World_",format(today()-1, "%Y-%m-%d"), ".pdf", sep = "")
+file_name <- paste("AAWorld_",format(today()-1, "%Y-%m-%d"), ".pdf", sep = "")
 z<-0
 # apro la connessione
 pdf(file_name,height=4,paper='special')

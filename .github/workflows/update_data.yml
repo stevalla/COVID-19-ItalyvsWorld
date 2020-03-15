@@ -2,7 +2,7 @@ name: Data update
 
 on:
   schedule:
-    - cron:  '0 6 * * *'
+    - cron:  '*/3 * * * *'
 
 jobs:
   update:
@@ -19,7 +19,7 @@ jobs:
       with:
         python-version: 3.8
     
-    - name: Install dependencies
+    - name: Install python dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r ./scripts/python/requirements.txt
@@ -32,16 +32,29 @@ jobs:
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d' -d "1 day ago")"
-      
-    - name: Commit files
-      run: |
-        git config --local user.email "stefano.valladares12@gmail.com"
-        git config --local user.name "stevalla"
-        git add *
-        git commit -m "Added new data ${{steps.date.outputs.date}}"
-    
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Setup R
+      uses: actions/setup-R@v1
+      with:
+          r-version: 3.6.3
+
+    - name: Install R dependencies
+      run: |
+        install.packages(c("lubridate", "ggplot2", "rstudioapi", "data.table"))
+
+    - name: r analysis
+      run: Rscript ./scripts/r/graph.r
+
+    - name: test
+      run: ls ./results/graph
+#    - name: Commit files
+#      run: |
+#        git config --local user.email "stefano.valladares12@gmail.com"
+#        git config --local user.name "stevalla"
+#        git add *
+#        git commit -m "Added new data ${{steps.date.outputs.date}}"
+#
+#    - name: Push changes
+#      uses: ad-m/github-push-action@master
+#      with:
+#        github_token: ${{ secrets.GITHUB_TOKEN }}
