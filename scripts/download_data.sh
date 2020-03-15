@@ -28,6 +28,7 @@ else
     mkdir "$folder"/world_data
     working_folder="$folder"/world_data
     svn checkout "$link" "$working_folder"
+    working_folder="$working_folder"/csse_covid_19_time_series
 fi
 
 # Copy to working folder
