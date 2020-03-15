@@ -1,11 +1,9 @@
 
 library(lubridate)
-library(data.table)
 library(ggplot2)
-library(rstudioapi)
+library(data.table)
 
 #creo path ai file con directory dinamica
-setwd("./../..")
 file_path_temp <- "data/world/history/time_series_19-covid-"
 data_csv <- paste(Sys.Date()-1,".csv",sep="")
 death_f <- paste(file_path_temp,"Deaths_",data_csv,sep="")
@@ -19,7 +17,7 @@ world_confirmed <- read.csv(path_final_confirmed)
 world_recovered <- read.csv(path_final_recovered)
 
 
-#inizio a creare il mio dataframe
+#iniio a creare il mio dataframe
 province <- world_death[,1]
 country <- world_death[,2]
 #droppo le prime 4 colonne
@@ -89,19 +87,17 @@ dates <- rep(days,length(unique(table_final$areas)))
 table_final <- setDT(cbind.data.frame(dates,table_final))
 
 path_temp<-"results/graph"
-final_wd <- file.path(getwd(),path_temp)
-setwd(final_wd)
 file_name <- paste("AAWorld_",format(today()-1, "%Y-%m-%d"), ".pdf", sep = "")
-z<-0
+file_name <- file.path(getwd(), path_temp, file_name)
 # apro la connessione
 pdf(file_name,height=4,paper='special')
 for (i in unique(table_final$areas)){
-  z <- z+1
   final_plot <- table_final[areas == i]
   final <-melt(final_plot,c("dates","areas"))
   
   plot_world <- ggplot(final,aes(dates,value,color=variable,group=variable))+geom_line()+ggtitle(paste("Covid 19",i,sep=" - "))
   
+  # asse secondario
   #plot_world <- plot_world + scale_y_continuous("death - recovered", sec.axis = sec_axis(~.*10, name="confirmed"))
   
    print(plot_world)

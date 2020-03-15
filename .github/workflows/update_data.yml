@@ -34,13 +34,12 @@ jobs:
       run: echo "::set-output name=date::$(date +'%Y-%m-%d' -d "1 day ago")"
 
     - name: Setup R
-      uses: r-lib/actions/setup-r@v1
-      with:
-          r-version: 3.6.3
+      uses: r-lib/actions/setup-r@master
 
     - name: Install R dependencies
       run: |
-        install.packages(c("lubridate", "ggplot2", "rstudioapi", "data.table"))
+        install.packages(c("lubridate", "ggplot2", "data.table"))
+      shell: Rscript {0}
 
     - name: r analysis
       run: Rscript ./scripts/r/graph.r
