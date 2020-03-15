@@ -49,14 +49,10 @@ def _integer_with_nan(df, col):
 
 def _check_data(data, country):
     if country == 'italy':
-  totale_attualmente_positivi      columns = ['data', 'denominazione_regione', 'lat', 'long', 'deceduti',
-                    'dimessi_guariti', 'totale_attualmente_positivi']
         assert data['data'][0] == '2020-02-24 18:00:00'
-
     elif country == 'world':
         columns = ['Province/State', 'Country/Region', 'Lat', 'Long']
         assert '1/22/20' in data.columns
-
     assert all(d in data.columns for d in columns)
 
 
