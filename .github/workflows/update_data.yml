@@ -34,7 +34,7 @@ jobs:
       run: echo "::set-output name=date::$(date +'%Y-%m-%d' -d "1 day ago")"
 
     - name: Setup R
-      uses: actions/setup-r@master
+      uses: r-lib/actions/setup-r@v1
       with:
           r-version: 3.6.3
 
