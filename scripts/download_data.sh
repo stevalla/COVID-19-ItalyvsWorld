@@ -27,9 +27,12 @@ if [[ "$country" == "italy" ]]; then
 else
     echo "$folder"
     mkdir "$folder"/world_data
+    ls "$folder"
     working_folder="$folder"/world_data
+    ls "$working_folder"
     svn checkout "$link" "$working_folder"
     working_folder="$working_folder"/csse_covid_19_time_series
+    ls "$working_folder"
 fi
 
 # Copy to working folder
