@@ -31,7 +31,7 @@ else
     working_folder="$folder"/world_data
     ls "$working_folder"
     svn checkout "$link" "$working_folder"
-    working_folder="$working_folder"/csse_covid_19_time_series
+    working_folder="$working_folder"
     ls "$folder"/world_data/
 fi
 
