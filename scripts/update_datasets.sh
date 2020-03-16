@@ -11,6 +11,6 @@ echo "Scanning Italy"
 bash "$folder"/download_data.sh italy
 
 # aggregate italian and world
-echo "Aggregating"
 cd "$folder"
-python3 -c "import python.preprocessing as pr; pr.aggregate_data()"
+echo "Aggregating"
+python3 -c "import covid_by_ste.preprocessing as pr; pr.aggregate_data()"

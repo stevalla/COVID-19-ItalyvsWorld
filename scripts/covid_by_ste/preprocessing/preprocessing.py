@@ -1,4 +1,3 @@
-import os
 import re
 import sys
 import glob
@@ -6,7 +5,7 @@ import datetime
 
 import pandas as pd
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from scripts.python.covid_analysis.utils import ROOT_DIR
 
 
 def unify_data(csv_dir, country, reshaper):
