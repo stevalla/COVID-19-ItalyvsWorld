@@ -32,7 +32,7 @@ else
     ls "$working_folder"
     svn checkout "$link" "$working_folder"
     working_folder="$working_folder"/csse_covid_19_time_series
-    ls "$working_folder"
+    ls "$folder"/world_data/
 fi
 
 # Copy to working folder
