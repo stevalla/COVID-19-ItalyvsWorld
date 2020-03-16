@@ -12,4 +12,4 @@ Our first intent is to practice on statistical analysis. At first, We will focus
 only on COVID data, then we would like to add other datasets that are likely
 correlated with the virus phenomena, e.g. pollution and economic data.
 
-Authors: Andrea Aquilino, Stefano Valladares
+Owned by: Andrea Aquilino, Stefano Valladares
