@@ -25,14 +25,10 @@ if [[ "$country" == "italy" ]]; then
     working_folder="$folder"/italy_data
     wget -q -P "$working_folder" "$link"
 else
-    echo "$folder"
     mkdir "$folder"/world_data
-    ls "$folder"
     working_folder="$folder"/world_data
-    ls "$working_folder"
     svn checkout "$link" "$working_folder"
     working_folder="$working_folder"
-    ls "$folder"/world_data/
 fi
 
 # Copy to working folder
