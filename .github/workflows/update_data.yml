@@ -8,7 +8,7 @@ jobs:
   update:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
+    
     steps:
     ############################# SETUP #################################
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -23,15 +23,10 @@ jobs:
     - name: Install python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r ./scripts/python/requirements.txt
+        pip install -r ./scripts/covid_by_ste/requirements.txt
 
     - name: Setup R
       uses: r-lib/actions/setup-r@master
-
-    - name: Install R dependencies
-      run: |
-        install.packages(c("lubridate", "ggplot2", "data.table"))
-      shell: Rscript {0}
 
     ##################### PYTHON PREPROCESSING ###########################
 
@@ -42,10 +37,15 @@ jobs:
 
     ########################## PYTHON ANALYSIS ###########################
     - name: Python analysis
-      run: -/scripts(update_analysis.sh
-      working_directory: .
+      run: ./scripts/update_analysis.sh
+      working-directory: .
 
     ########################### R ANALYSIS ###############################
+    - name: Install R dependencies
+      run: |
+        install.packages(c("lubridate", "ggplot2", "data.table"))
+      shell: Rscript {0}
+    
     - name: Generate pdf day resume per country
       run: Rscript ./scripts/r/graph.r
 
