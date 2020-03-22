@@ -20,6 +20,6 @@ bash "$folder"/download_data.sh italy
 
 # aggregate italian and world data
 echo "Aggregating"
-python3 -c "import covid_by_ste.preprocessing as pr; pr.aggregate_data()"
+python3 -c "import preprocessing as pr; pr.aggregate_data()"
 
 # TODO: add check of new data

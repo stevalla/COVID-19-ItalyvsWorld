@@ -45,4 +45,4 @@ done
 
 # Cleaning
 rm -r "$working_folder"
-#rm -f "$data_folder"/*.csv
+rm -f "$data_folder"/*.csv

@@ -62,7 +62,7 @@ class DatasetFactory:
         data = pd.DataFrame()
         for d in datasets:
             data = pd.concat([data, d.data])
-        log.info('Merged data has now shape'.format(data.shape))
+        log.info('Merged data has now shape {}'.format(data.shape))
         return data
 
     def _get_dataset(self, name, cleaned):
