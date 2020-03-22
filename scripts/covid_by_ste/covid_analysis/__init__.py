@@ -8,4 +8,4 @@ from .covid_analyzer import CovidAnalyzer
 from .plotter import Plotter
 from .utils import DIRS, STATUS_TYPES, VALID_DATASETS, yesterday
 from .data_handler import DatasetFactory
-from .analysis import grow_rate
+from .analysis import grow_rate, logistic_curves

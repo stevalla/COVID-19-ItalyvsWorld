@@ -1,5 +1,8 @@
 # COVID-19 Italy and World
 
+![Cumulative Distributions at 2020-03-19](results/logistic_curves.png)
+
+
 This repository has been created with the aim to perform some analysis with
 the COVID-19 data of Italy and of the all world.
 

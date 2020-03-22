@@ -29,11 +29,6 @@ class Dataset:
 
     # TODO: override __copy__ function
 
-    def get_data_groupedby(self, by):
-        """ Returns data grouped by 'by' but without aggregating it """
-        assert all(b in self._columns for b in by)
-        return self._data.groupby(by)
-
     def _load_data(self, filepath):
         def date_parser(x):
             return pd.datetime.strptime(x, '%m/%d/%y')

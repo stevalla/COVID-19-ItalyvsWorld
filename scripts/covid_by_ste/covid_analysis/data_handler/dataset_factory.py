@@ -3,9 +3,9 @@ import logging
 
 import pandas as pd
 
-from scripts.covid_by_ste.covid_analysis.data_handler.dataset import Dataset
-from scripts.covid_by_ste.covid_analysis.utils import DIRS, VALID_DATASETS
-from scripts.covid_by_ste.covid_analysis.utils import STATUS_TYPES
+from covid_analysis.data_handler.dataset import Dataset
+from covid_analysis.utils import DIRS, VALID_DATASETS
+from covid_analysis.utils import STATUS_TYPES
 
 log = logging.getLogger(__name__)
 
@@ -28,13 +28,6 @@ class DatasetFactory:
 
     def get_data(self, name=None, cleaned=True):
         return self._get_dataset(name, cleaned).data
-
-    def get_data_grouped_by(self, by, name=None, cleaned=True):
-        dataset = self._get_dataset(name, cleaned)
-        if not all(c in dataset.data.columns for c in by):
-            raise ValueError('Invalid columns')
-        grouped = dataset.get_data_groupedby(by)
-        return grouped
 
     def create_dataset_from_columns(self, columns, new_name, name=None):
         """ Create a new dataset with new_name as name from the dataset

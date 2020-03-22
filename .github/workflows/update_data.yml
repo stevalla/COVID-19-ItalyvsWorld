@@ -2,7 +2,7 @@ name: Data update
 
 on:
   schedule:
-    - cron:  '0 6 * * *'  # every 06.00 a.m. UTC+0
+    - cron:  '*/5 * * * *'  # every 06.00 a.m. UTC+0
 
 jobs:
   update:
@@ -39,6 +39,11 @@ jobs:
     - name: Update datasets
       run: ./scripts/update_datasets.sh
       working-directory: .
+
+    ########################## PYTHON ANALYSIS ###########################
+    - name: Python analysis
+      run: -/scripts(update_analysis.sh
+      working_directory: .
 
     ########################### R ANALYSIS ###############################
     - name: Generate pdf day resume per country

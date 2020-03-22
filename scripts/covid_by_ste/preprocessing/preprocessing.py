@@ -1,11 +1,14 @@
 import re
 import sys
 import glob
+import logging
 import datetime
 
 import pandas as pd
 
-from scripts.python.covid_analysis.utils import ROOT_DIR
+from covid_analysis.utils import ROOT_DIR
+
+log = logging.getLogger(__name__)
 
 
 def unify_data(csv_dir, country, reshaper):
@@ -32,7 +35,7 @@ def unify_data(csv_dir, country, reshaper):
     for c in ['Confirmed', 'Recovered', 'Deaths']:
         unified = _integer_with_nan(unified, c)
 
-    unified.to_csv('{}../cleaned/{}.csv'.format(csv_dir, country), index=False,
+    unified.to_csv('{}/cleaned/{}.csv'.format(csv_dir, country), index=False,
                    float_format='%.5f')
     return unified
 
@@ -180,8 +183,8 @@ def aggregate_data():
     try:
         assert italy_shape[0] + world_shape[0] - removed == total.shape[0]
     except AssertionError:
-        print('The total size seems to be not correct, check the dates of' 
-              'italy and world csv, Italy may has one date more.')
+        log.info('The total size seems to be not correct, check the dates of ' 
+                 'italy and world csv, Italy may has one date more.')
 
     for c in ['Confirmed', 'Recovered', 'Deaths']:
         total = _integer_with_nan(total, c)
@@ -191,7 +194,7 @@ def aggregate_data():
 
 if __name__ == '__main__':
     country = sys.argv[1]
-    csv_dir = '{}/data/{}/'.format(ROOT_DIR, country)
+    csv_dir = '{}/data/'.format(ROOT_DIR)
     if country == 'italy':
         reshaper = reshape_italy_data
     else:
