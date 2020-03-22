@@ -94,7 +94,7 @@ class Plotter:
                 fig, axs = plt.subplots(ncols=3, figsize=(40, 15))
                 plt.suptitle(c, fontsize=50)
                 for col, ax, (s, data) in zip(colors, axs, status_dict.items()):
-                    filtered = data[c][data[c] >= 0][first_occs[c]:-1]
+                    filtered = data[c][data[c] >= 0][first_occs[c]][:-1]
                     # histogram
                     sb.distplot(filtered, ax=ax, color=col, **dist_kwargs)
                     # distribution

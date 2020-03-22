@@ -8,10 +8,6 @@ log = logging.getLogger(__name__)
 
 sep = '='*50
 
-filepaths = ['cleaned/total.csv']
-analyzer = CovidAnalyzer(filepaths)
-plotter = Plotter(analyzer.data)
-
 
 def grow_rate():
     log.info('>>> Generating grow rates...')
@@ -31,9 +27,13 @@ def histograms():
 
 
 if __name__ == '__main__':
+    filepaths = ['cleaned/total.csv']
+    analyzer = CovidAnalyzer(filepaths)
+    plotter = Plotter(analyzer.data)
+
     log.info('{0:} Starting analysis {0:}'.format(sep))
 
-    # grow_rate(analyzer)   TODO: check if it runs
+    # grow_rate(analyzer) TODO: check if it runs
 
     # logistic_curves()
 
