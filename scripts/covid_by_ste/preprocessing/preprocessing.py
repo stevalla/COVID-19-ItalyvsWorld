@@ -19,7 +19,9 @@ def unify_data(csv_dir, country, reshaper):
     current_data = pd.DataFrame()
 
     for csv_file in glob.glob(csv_dir + '*.csv'):
-        if not re.search('^(.*).csv$', csv_file):
+        if not re.search('^(.*).csv$', csv_file) or \
+                (country == 'world' and
+                 not re.search('^.*(Recovered|Confirmed|Deaths).*$', csv_file)):
             continue
         data = pd.read_csv(csv_file)
         _check_data(data, country)

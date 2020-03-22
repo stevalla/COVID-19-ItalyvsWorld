@@ -30,7 +30,7 @@ else
     working_folder="$working_folder"
 fi
 
-# Copy to working folder
+# Copy data from working folder
 cp "$working_folder"/*.csv "$data_folder"
 
 # Update data
@@ -45,4 +45,4 @@ done
 
 # Cleaning
 rm -r "$working_folder"
-rm -f "$data_folder"/*.csv
+#rm -f "$data_folder"/*.csv

@@ -94,8 +94,10 @@ class Plotter:
                 fig, axs = plt.subplots(ncols=3, figsize=(40, 15))
                 plt.suptitle(c, fontsize=50)
                 for col, ax, (s, data) in zip(colors, axs, status_dict.items()):
-                    filtered = data[c][data[c] >= 0][first_occs[c]:]
+                    filtered = data[c][data[c] >= 0][first_occs[c]:-1]
+                    # histogram
                     sb.distplot(filtered, ax=ax, color=col, **dist_kwargs)
+                    # distribution
                     ax2 = ax.twinx()
                     ax2.yaxis.set_ticks([])
                     try:
@@ -104,6 +106,9 @@ class Plotter:
                     except KernelEstimationError as e:
                         text = 'Error [{}] on kernel estimation of {}_{}'
                         log.info(text.format(e, c, s))
+                    # last observation
+                    last = data[c][data[c] >= 0][-1]
+                    plt.axvline(last, ax=ax, color='b', legend='observation at {}'.format(yesterday()))
                     self._set_subplot_prop(ax, filtered, '{}'.format(s))
                 # plt.show()
                 pdf.savefig(fig)
