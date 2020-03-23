@@ -35,11 +35,11 @@ class Plotter:
         wrapper_store_pdf(plot_grow_rates, filepath)
 
     def plot_logistic_curve(self, data):
-        grouped = data.groupby('date').sum()[STATUS_TYPES]
         filename = '{}/logistic_curves.png'.format(DIRS['result'])
         colors = ['b', 'y', 'c']
-        fig, ax = plt.subplots(figsize=(24, 11))
         lines = []
+
+        fig, ax = plt.subplots(figsize=(24, 11))
         ax.set_xlabel('Cumulative distributions', fontsize=32)
         ax.xaxis.set_label_coords(0.5, -0.22)
         ax.set_ylabel('Confirmed | Recovered', fontsize=22)
@@ -47,15 +47,16 @@ class Plotter:
         plt.xticks(fontsize=22)
         plt.yticks(fontsize=22)
 
+        grouped = data.groupby('date').sum()[STATUS_TYPES]
         for i, s in enumerate(STATUS_TYPES):
             tmp = ax
             if s == 'Deaths':
                 ax2 = ax.twinx()
                 ax2.set_ylabel(s, fontsize=22)
                 tmp = ax2
-            lines += tmp.plot(grouped.index, grouped[s], color=colors[i], label=s,
-                              linewidth=5)
-            if i == 1:
+            lines += tmp.plot(grouped.index, grouped[s], color=colors[i],
+                              label=s, linewidth=5)
+            if s == 'Confirmed':
                 tmp.fill_between(grouped[s].index, grouped[s],
                                  grouped[STATUS_TYPES[i - 1]],
                                  color=colors[i], alpha=0.3)
@@ -64,7 +65,7 @@ class Plotter:
                                  color=colors[i], alpha=0.3)
 
         self._apply_basic_format_plt(fig=fig, grid=True)
-        leg = ax.legend(lines, [l.get_label() for l in lines],
+        leg = ax.legend(lines, [line.get_label() for line in lines],
                         bbox_to_anchor=(.5, 1), edgecolor='white',
                         loc='lower center', ncol=3, fontsize=22,
                         columnspacing=6, handlelength=5, facecolor='white')
@@ -123,7 +124,6 @@ class Plotter:
 
                     self._set_subplot_prop(ax, '{}'.format(s))
                 plt.legend([last_obs], legend_text, **legend_kwargs)
-                # plt.show()
                 pdf.savefig(fig)
                 plt.close(fig)
 

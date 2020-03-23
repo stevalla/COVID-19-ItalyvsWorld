@@ -6,7 +6,7 @@ import datetime
 
 import pandas as pd
 
-from covid_analysis.utils import ROOT_DIR
+from covid_analysis.utils import ROOT_DIR, STATUS_TYPES
 
 log = logging.getLogger(__name__)
 
@@ -33,21 +33,22 @@ def unify_data(csv_dir, country, reshaper):
 
     # update data with current new data
     unified = pd.concat(([unified, current_data]))
-
-    for c in ['Confirmed', 'Recovered', 'Deaths']:
-        unified = _integer_with_nan(unified, c)
-
+    unified = _integer_with_nan(unified, country)
     unified.to_csv('{}/cleaned/{}.csv'.format(csv_dir, country), index=False,
                    float_format='%.5f')
     return unified
 
 
-def _integer_with_nan(df, col):
-    df[col] = (df[col]
-                .fillna(-1)
-                .astype(int)
-                .astype(object)
-                .where(df[col].notnull()))
+def _integer_with_nan(df, country):
+    status_types = STATUS_TYPES
+    if country == 'italy':
+        status_types = ['deceduti', 'totale_casi', 'dimessi_guariti']
+    for col in status_types:
+        df[col] = (df[col]
+                    .fillna(-1)
+                    .astype(int)
+                    .astype(object)
+                    .where(df[col].notnull()))
     return df
 
 
@@ -63,29 +64,30 @@ def _check_data(data, country):
 
 
 def reshape_italy_data(unified, data):
-    mapping = {'Province/State': 'denominazione_regione',
-               'Lat': 'lat', 'Long': 'long', 'date': 'data',
-               'Deaths': 'deceduti',
-               'Confirmed': 'totale_casi',
-               'Recovered': 'dimessi_guariti'}
+    # mapping = {'Province/State': 'denominazione_regione',
+    #            'Lat': 'lat', 'Long': 'long', 'date': 'data',
+    #            'Deaths': 'deceduti',
+    #            'Confirmed': 'totale_casi',
+    #            'Recovered': 'dimessi_guariti'}
 
     dates, d_mapping = _convert_dates(data['data'])
-    data = data[mapping.values()]
+    # data = data[mapping.values()]
 
     if not unified.empty:
         dates = tuple(d for d in dates if d not in unified['date'].unique())
         italy_dates = (d_i for d_w, d_i in d_mapping.items()
                        if d_w not in unified['date'].unique())
         if not dates:
-            print("The data are up to date with those in italy")
+            print("Italy data are up to date")
             return None
         data = data.loc[data['data'].isin(list(italy_dates))]
 
-    del mapping['date']
-    new_data = pd.DataFrame({c: data[k] for c, k in mapping.items()})
-    new_data.insert(loc=1, column='Country/Region', value='Italy')
-    new_data.insert(loc=4, column='date', value=dates)
-    return new_data
+    # del mapping['date']
+    data['data'] = dates
+    # new_data = pd.DataFrame({c: data[k] for c, k in mapping.items()})
+    # new_data.insert(loc=1, column='Country/Region', value='Italy')
+    # new_data.insert(loc=4, column='date', value=dates)
+    return data
 
 
 def _convert_dates(dates):
@@ -100,6 +102,7 @@ def _convert_dates(dates):
 
 def _convert_date(date):
     """From Italy format to world format. (Default)"""
+    # date = date[:11].split('-')
     date = date.split(' ')[0].split('-')
     date[0] = date[0][2:]
     new_date = [int(d) for d in date]
@@ -155,6 +158,7 @@ def reshape_world_data(unified, data, csv_file, current_data):
 def aggregate_data():
     data_dir = '{}/data/cleaned/'.format(ROOT_DIR)
     italy = pd.read_csv('{}italy.csv'.format(data_dir))
+    italy = _make_italy_consistent(italy)
     world = pd.read_csv('{}world.csv'.format(data_dir))
     all_dates = list(set(world['date']) | set(italy['date']))
     all_dates.sort(key=lambda d: datetime.datetime.strptime(d, '%m/%d/%y'))
@@ -192,6 +196,19 @@ def aggregate_data():
         total = _integer_with_nan(total, c)
     total.to_csv('{}total.csv'.format(data_dir), index=False,
                  float_format='%.5f')
+
+
+def _make_italy_consistent(italy_data):
+    mapping = {'Province/State': 'denominazione_regione',
+               'Lat': 'lat', 'Long': 'long',
+               'Deaths': 'deceduti',
+               'Confirmed': 'totale_casi',
+               'Recovered': 'dimessi_guariti'}
+    data = pd.DataFrame({c: italy_data[k] for c, k in mapping.items()})
+    data.insert(loc=1, column='Country/Region', value='Italy')
+    dates = italy_data['data']
+    data.insert(loc=4, column='date', value=dates)
+    return data
 
 
 if __name__ == '__main__':
