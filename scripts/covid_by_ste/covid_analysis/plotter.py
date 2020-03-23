@@ -80,23 +80,33 @@ class Plotter:
         points is low reduces noise due to sampling randomness. We
         decide to use the doane method """
         countries = list(status_dict.values())[0].columns
-        # countries = ['Italy']
         filename = '{}/histograms/{}.pdf'.format(DIRS['result'], yesterday())
         colors = ['c', 'r', 'g']
         dist_kwargs = dict(kde=False, bins='doane', norm_hist=False,
                            hist_kws=dict(edgecolor='black', linewidth=2))
         kde_kwargs = dict(legend=False, linewidth=6)
+        legend_text = ('Increment of {}'.format(yesterday()),)
+        legend_kwargs = dict(edgecolor='white', loc='lower right', fontsize=30,
+                             facecolor='white', bbox_to_anchor=(1, -.15))
         first_occs = self._get_day_first_occurrence(status_dict)
 
         def _plot_histograms(pdf):
+            last_obs = None
+
             for c in countries:
                 log.info('Country: {} first occ at {}'.format(c, first_occs[c]))
                 fig, axs = plt.subplots(ncols=3, figsize=(40, 15))
                 plt.suptitle(c, fontsize=50)
                 for col, ax, (s, data) in zip(colors, axs, status_dict.items()):
-                    filtered = data[c][data[c] >= 0][first_occs[c]][:-1]
+
+                    all_filtered = data[c][data[c] >= 0][first_occs[c]:]
+                    # if all_filtered.shape[0] <= 1:
+                    #     continue
+                    filtered = all_filtered[:all_filtered.shape[0] - 1]
+
                     # histogram
                     sb.distplot(filtered, ax=ax, color=col, **dist_kwargs)
+
                     # distribution
                     ax2 = ax.twinx()
                     ax2.yaxis.set_ticks([])
@@ -104,27 +114,30 @@ class Plotter:
                         kde_kwargs['clip'] = (0, filtered.max())
                         sb.kdeplot(filtered, ax=ax2, color=col, **kde_kwargs)
                     except KernelEstimationError as e:
-                        text = 'Error [{}] on kernel estimation of {}_{}'
+                        text = '[Error: {}] on kernel estimation of {}_{}'
                         log.info(text.format(e, c, s))
+
                     # last observation
-                    last = data[c][data[c] >= 0][-1]
-                    plt.axvline(last, ax=ax, color='b', legend='observation at {}'.format(yesterday()))
-                    self._set_subplot_prop(ax, filtered, '{}'.format(s))
+                    last = all_filtered[all_filtered.shape[0] - 1]
+                    last_obs = plt.axvline(last, color='b', linewidth=10)
+
+                    self._set_subplot_prop(ax, '{}'.format(s))
+                plt.legend([last_obs], legend_text, **legend_kwargs)
                 # plt.show()
                 pdf.savefig(fig)
                 plt.close(fig)
 
         wrapper_store_pdf(_plot_histograms, filename)
 
-    def _set_subplot_prop(self, ax, data, title):
+    def _set_subplot_prop(self, ax, title):
         ax.set_facecolor("white")
-        ax.set_xlim(0, data.max())
+        ax.set_xlim(left=-.001)
         ax.set_title(title, fontsize=36)
         ax.xaxis.set_tick_params(labelsize=30)
         ax.yaxis.set_tick_params(labelsize=30)
         ax.grid(True, color="grey", linestyle='-', linewidth=.05)
         if title == 'Confirmed':
-            ax.set_xlabel('Day by day differences', fontsize=32)
+            ax.set_xlabel('Daily increments', fontsize=32)
         else:
             ax.set_xlabel('')
 
