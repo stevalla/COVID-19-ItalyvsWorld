@@ -10,6 +10,9 @@ log = logging.getLogger(__name__)
 
 sep = '='*50
 
+analyzer = CovidAnalyzer(['cleaned/total.csv'])
+plotter = Plotter(analyzer.data)
+
 
 def grow_rate():
     log.info('>>> Generating grow rates...')
@@ -50,8 +53,6 @@ def italy_scatter_swab():
 if __name__ == '__main__':
     file = sys.argv[1]
     filepaths = {'total': 'cleaned/total.csv', 'italy': 'cleaned/italy.csv'}
-    analyzer = CovidAnalyzer([filepaths[file]])
-    plotter = Plotter(analyzer.data)
 
     log.info('{0:} Starting analysis {0:}'.format(sep))
 

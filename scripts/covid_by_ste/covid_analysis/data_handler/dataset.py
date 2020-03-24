@@ -15,7 +15,8 @@ class Dataset:
 
     def __init__(self, filepath='', data=None):
         assert filepath is not None or data is not None
-        if re.search('^.*italy.csv$', filepath) or 'data' in data.columns:
+        if re.search('^.*italy.csv$', filepath) or \
+                (data is not None and 'data' in data.columns):
             self._date_field = 'data'
         else:
             self._date_field = 'date'
