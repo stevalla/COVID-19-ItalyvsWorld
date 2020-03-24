@@ -32,6 +32,7 @@ def histograms():
 
 
 def swab_regression():
+    analyzer = CovidAnalyzer(['cleaned/italy.csv'])
     log.info(">>> Let's see if the Confirmed has some bias coming from swabs...")
     data = analyzer.data
     xs = data['tamponi']
@@ -42,6 +43,8 @@ def swab_regression():
 
 
 def italy_scatter_swab():
+    analyzer = CovidAnalyzer(['cleaned/italy.csv'])
+    plotter = Plotter(analyzer.data)
     log.info(">>> Italy analysis")
     data = analyzer.data
     rgr = Regressor(data['tamponi'], data['totale_casi'])
