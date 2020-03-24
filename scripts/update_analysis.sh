@@ -13,10 +13,9 @@ export PYTHONPATH="$folder"/covid_by_ste
 ######################### LOGISTIC CURVES ############################
 
 # store old logistic curve
-mv "$folder"/../results/logistic_curves.png "$folder"/../results/logistic_curves/"$yesterday".png
+mv "$folder"/../results/logistic_curves.png \
+    "$folder"/../results/logistic_curves/"$yesterday".png
 
 # recompute cumulative distributions and store the new image
-echo "Cumulative distributions"
-python3 -c "import covid_analysis as covid; \
-            covid.logistic_curves(); \
-            covid.italy_scatter_swab()"
+echo "Run python analysis"
+python3 -c "$folder"/covid_by_ste/run_analysis.py
