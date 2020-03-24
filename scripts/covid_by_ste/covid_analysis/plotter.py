@@ -168,8 +168,8 @@ class Plotter:
         pdf = PdfPages(filepath)
         pdf.savefig(fig)
         pdf.close()
-        self._merge_pdf(italy_path, filepath)
-        os.rename(merged_filepath, italy_path)
+        # self._merge_pdf(italy_path, filepath)
+        # os.rename(merged_filepath, italy_path)
 
     def _merge_pdf(self, file1, file2):
         output = PdfFileWriter()
