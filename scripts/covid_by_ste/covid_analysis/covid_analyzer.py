@@ -11,7 +11,6 @@ class CovidAnalyzer:
 
     def __init__(self, filepaths):
         self._data_factory = DatasetFactory(filepaths)
-        self._split_data_by_status()
 
     @property
     def data(self):
@@ -28,9 +27,9 @@ class CovidAnalyzer:
         increments = self._prepare_for_plotting(increments)
         return increments
 
-    def grow_rate_per_country(self, status=None):
-        # TODO: refactor
-        data_ = self._data_factory.get_data(name=status)
+    def grow_rate_per_country(self):
+        # TODO: refactor (it doesn't work right now)
+        data_ = self._data_factory.get_data()
         countries = data_[COUNTRY].unique()
 
         grow_rates = {}
@@ -62,13 +61,6 @@ class CovidAnalyzer:
                 grow_rate[day] = (serie[day] - serie[day - 1]) \
                                  / serie[day - 1] * 100
         return grow_rate
-
-    def _split_data_by_status(self):
-        """ Create three custom datasets, one for each status"""
-        for s in STATUS_TYPES:
-            data = self._data_factory.get_data()
-            cols = [c for c in data if c not in STATUS_TYPES] + [s]
-            self._data_factory.create_dataset_from_columns(cols, s)
 
     def _prepare_for_plotting(self, data):
         prepared = {}

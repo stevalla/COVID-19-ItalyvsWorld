@@ -1,8 +1,10 @@
+import sys
 import logging
 
 from covid_analysis.utils import yesterday
 from covid_analysis.plotter import Plotter
 from covid_analysis.covid_analyzer import CovidAnalyzer
+from covid_analysis.regressor import Regressor
 
 log = logging.getLogger(__name__)
 
@@ -26,15 +28,38 @@ def histograms():
     plotter.histograms(hist_data)
 
 
+def swab_regression():
+    log.info(">>> Let's see if the Confirmed has some bias coming from swabs...")
+    data = analyzer.data
+    xs = data['tamponi']
+    ys = data['totale_casi']
+    rgr = Regressor(xs, ys)
+    rgr.evaluate_model()
+    rgr.plot_y_over_x()
+
+
+def italy_scatter_swab():
+    log.info(">>> Italy analysis")
+    data = analyzer.data
+    rgr = Regressor(data['tamponi'], data['totale_casi'])
+    rgr = rgr.fit()
+    log.info("Plotting scatter trend of confirmed over number of swabs each day")
+    plotter.scatter_swabs(data, rgr.predict(data['tamponi']))
+
+
 if __name__ == '__main__':
-    filepaths = ['cleaned/total.csv']
-    analyzer = CovidAnalyzer(filepaths)
+    file = sys.argv[1]
+    filepaths = {'total': 'cleaned/total.csv', 'italy': 'cleaned/italy.csv'}
+    analyzer = CovidAnalyzer([filepaths[file]])
     plotter = Plotter(analyzer.data)
 
     log.info('{0:} Starting analysis {0:}'.format(sep))
 
     # grow_rate(analyzer) TODO: check if it runs
 
-    # logistic_curves()
+    # histograms() TODO: QA
 
-    histograms()
+    # swab_regression()
+
+    # italy_scatter_swab()
+

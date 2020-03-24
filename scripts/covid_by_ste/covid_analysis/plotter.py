@@ -1,9 +1,13 @@
 import os
 import logging
 
-import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sb
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
+from cycler import cycler
+from PyPDF2 import PdfFileReader, PdfFileWriter
 from covid_analysis.utils import DIRS, STATUS_TYPES
 from covid_analysis.utils import yesterday, wrapper_store_pdf
 from covid_analysis.utils import KernelEstimationError
@@ -55,7 +59,7 @@ class Plotter:
                 ax2.set_ylabel(s, fontsize=22)
                 tmp = ax2
             lines += tmp.plot(grouped.index, grouped[s], color=colors[i],
-                              label=s, linewidth=5)
+                              label=s, lw=5)
             if s == 'Confirmed':
                 tmp.fill_between(grouped[s].index, grouped[s],
                                  grouped[STATUS_TYPES[i - 1]],
@@ -84,8 +88,8 @@ class Plotter:
         filename = '{}/histograms/{}.pdf'.format(DIRS['result'], yesterday())
         colors = ['c', 'r', 'g']
         dist_kwargs = dict(kde=False, bins='doane', norm_hist=False,
-                           hist_kws=dict(edgecolor='black', linewidth=2))
-        kde_kwargs = dict(legend=False, linewidth=6)
+                           hist_kws=dict(edgecolor='black', lw=2))
+        kde_kwargs = dict(legend=False, lw=6)
         legend_text = ('Increment of {}'.format(yesterday()),)
         legend_kwargs = dict(edgecolor='white', loc='lower right', fontsize=30,
                              facecolor='white', bbox_to_anchor=(1, -.15))
@@ -120,7 +124,7 @@ class Plotter:
 
                     # last observation
                     last = all_filtered[all_filtered.shape[0] - 1]
-                    last_obs = plt.axvline(last, color='b', linewidth=10)
+                    last_obs = plt.axvline(last, color='b', lw=10)
 
                     self._set_subplot_prop(ax, '{}'.format(s))
                 plt.legend([last_obs], legend_text, **legend_kwargs)
@@ -129,13 +133,65 @@ class Plotter:
 
         wrapper_store_pdf(_plot_histograms, filename)
 
+    def scatter_swabs(self, italy_data, rgr_line):
+        fig, ax = plt.subplots(figsize=(15, 8), )
+        legend_kwargs = dict(edgecolor='white', loc='lower right',
+                             facecolor='white', bbox_to_anchor=(1, .15))
+        regions = italy_data['codice_regione'].unique()
+        markers = ['o', 's', 'v', '^', '1', 'p', 'P', '*', 'x', 'X']
+
+        cmap = plt.get_cmap('gist_rainbow')
+        c = cycler('color', cmap(np.linspace(0, 1, len(regions))))
+        ax.set_prop_cycle(c)
+
+        for i, region in enumerate(regions):
+            data = italy_data[italy_data['codice_regione'] == region]
+            ax.plot(data['tamponi'], data['totale_casi'],
+                    marker=markers[i % 10], ms=10)
+        plt.plot(italy_data['tamponi'], rgr_line, color='black', lw=2)
+
+        legend_lines = list(italy_data['denominazione_regione'].unique()) \
+                       + ['regression line']
+        ax.legend(legend_lines, **legend_kwargs)
+        ax.set_title('Function_ number of swabs -> number of confirmed at {}'
+                     .format(yesterday()))
+        ax.set_facecolor("white")
+        ax.set_xlabel('Swabs')
+        ax.set_ylabel('Confirmed')
+        ax.grid(True, color="grey", linestyle='--', lw=.02)
+
+        # plt.show()
+        filepath = os.path.join(DIRS['result'], 'tmp.pdf')
+        italy_path = os.path.join(DIRS['result'], 'italy_scatter.pdf')
+        merged_filepath = os.path.join(DIRS['result'], 'merged.pdf')
+
+        pdf = PdfPages(filepath)
+        pdf.savefig(fig)
+        pdf.close()
+        self._merge_pdf(italy_path, filepath)
+        os.rename(merged_filepath, italy_path)
+
+    def _merge_pdf(self, file1, file2):
+        output = PdfFileWriter()
+        pdf1 = PdfFileReader(open(file1, "rb"))
+        pdf2 = PdfFileReader(open(file2, "rb"))
+
+        for page in pdf1.pages:
+            output.addPage(page)
+        for page in pdf2.pages:
+            output.addPage(page)
+
+        outfile = open(os.path.join(DIRS['result'], 'merged.pdf'), "wb")
+        output.write(outfile)
+        outfile.close()
+
     def _set_subplot_prop(self, ax, title):
         ax.set_facecolor("white")
         ax.set_xlim(left=-.001)
         ax.set_title(title, fontsize=36)
         ax.xaxis.set_tick_params(labelsize=30)
         ax.yaxis.set_tick_params(labelsize=30)
-        ax.grid(True, color="grey", linestyle='-', linewidth=.05)
+        ax.grid(True, color="grey", linestyle='-', lw=.05)
         if title == 'Confirmed':
             ax.set_xlabel('Daily increments', fontsize=32)
         else:
@@ -145,7 +201,7 @@ class Plotter:
                                 ylabel=None, grid=False):
         if fig is not None:
             fig.autofmt_xdate()
-        plt.grid(grid, color="grey", linestyle='--', linewidth=0.2)
+        plt.grid(grid, color="grey", linestyle='--', lw=0.2)
         if title is not None:
             plt.title(title, fontsize=28)
         if legend is not None:

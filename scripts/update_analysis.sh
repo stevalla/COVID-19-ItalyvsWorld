@@ -17,4 +17,6 @@ mv "$folder"/../results/logistic_curves.png "$folder"/../results/logistic_curves
 
 # recompute cumulative distributions and store the new image
 echo "Cumulative distributions"
-python3 -c "import covid_analysis as covid; covid.logistic_curves()"
+python3 -c "import covid_analysis as covid; \
+            covid.logistic_curves(); \
+            covid.italy_scatter_swab()"
