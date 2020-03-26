@@ -91,8 +91,7 @@ def _convert_dates(dates):
 
 def _convert_date(date):
     """From Italy format to world format. (Default)"""
-    date = date[:11].split('-')
-    # date = date.split(' ')[0].split('-')
+    date = date[:11].split('T')[0].split('-')
     date[0] = date[0][2:]
     new_date = [int(d) for d in date]
     new_date = '{0[1]:}/{0[2]:}/{0[0]:}'.format(new_date)
@@ -102,7 +101,7 @@ def _convert_date(date):
 def reshape_world_data(unified, data, csv_file, current_data):
     new_data = pd.DataFrame()
     current_data = current_data
-    file_type = re.search('^.*-covid-(.*).csv$', csv_file).group(1)
+    file_type = re.search('^.*_covid19_(.*).csv$', csv_file).group(1)
     time_series = data.iloc[:, 4:]
 
     # drop time_series
