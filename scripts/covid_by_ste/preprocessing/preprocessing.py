@@ -21,7 +21,7 @@ def unify_data(csv_dir, country, reshaper):
     for csv_file in glob.glob(csv_dir + '*.csv'):
         if not re.search('^(.*).csv$', csv_file) or \
                 (country == 'world' and
-                 not re.search('^.*(Recovered|Confirmed|Deaths).*$', csv_file)):
+                 not re.search('^.*(recovered|confirmed|deaths).*$', csv_file)):
             continue
         data = pd.read_csv(csv_file)
         _check_data(data, country)
@@ -56,7 +56,7 @@ def _check_data(data, country):
     if country == 'italy':
         columns = ['data', 'denominazione_regione', 'lat', 'long', 'deceduti',
                     'dimessi_guariti', 'totale_casi']
-        assert data['data'][0] == '2020-02-24 18:00:00'
+        assert data['data'][0] == '2020-02-24T18:00:00'
     elif country == 'world':
         columns = ['Province/State', 'Country/Region', 'Lat', 'Long']
         assert '1/22/20' in data.columns
@@ -64,14 +64,7 @@ def _check_data(data, country):
 
 
 def reshape_italy_data(unified, data):
-    # mapping = {'Province/State': 'denominazione_regione',
-    #            'Lat': 'lat', 'Long': 'long', 'date': 'data',
-    #            'Deaths': 'deceduti',
-    #            'Confirmed': 'totale_casi',
-    #            'Recovered': 'dimessi_guariti'}
-
     dates, d_mapping = _convert_dates(data['data'])
-    # data = data[mapping.values()]
 
     if not unified.empty:
         dates = tuple(d for d in dates if d not in unified['date'].unique())
@@ -82,11 +75,7 @@ def reshape_italy_data(unified, data):
             return None
         data = data.loc[data['data'].isin(list(italy_dates))]
 
-    # del mapping['date']
     data['data'] = dates
-    # new_data = pd.DataFrame({c: data[k] for c, k in mapping.items()})
-    # new_data.insert(loc=1, column='Country/Region', value='Italy')
-    # new_data.insert(loc=4, column='date', value=dates)
     return data
 
 
@@ -102,8 +91,8 @@ def _convert_dates(dates):
 
 def _convert_date(date):
     """From Italy format to world format. (Default)"""
-    # date = date[:11].split('-')
-    date = date.split(' ')[0].split('-')
+    date = date[:11].split('-')
+    # date = date.split(' ')[0].split('-')
     date[0] = date[0][2:]
     new_date = [int(d) for d in date]
     new_date = '{0[1]:}/{0[2]:}/{0[0]:}'.format(new_date)
