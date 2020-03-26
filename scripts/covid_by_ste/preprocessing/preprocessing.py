@@ -100,10 +100,15 @@ def _convert_date(date):
 
 def reshape_world_data(unified, data, csv_file, current_data):
     new_data = pd.DataFrame()
-    current_data = current_data
     file_type = re.search('^.*_covid19_(.*).csv$', csv_file).group(1)
     time_series = data.iloc[:, 4:]
-
+    
+    if file_type == 'recovered':
+        new_dates = []
+        for data in current_data['date'].values:
+            new_dates.append(data[:7])
+        current_data['date'] = new_dates
+            
     # drop time_series
     data.drop(columns=time_series.columns, inplace=True, axis=1)
     assert data.shape[1] == 4
