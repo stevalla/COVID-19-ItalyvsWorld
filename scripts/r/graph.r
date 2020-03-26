@@ -4,11 +4,11 @@ library(ggplot2)
 library(data.table)
 
 #creo path ai file con directory dinamica
-file_path_temp <- "data/history/world/time_series_19-covid-"
+file_path_temp <- "data/history/world/time_series_covid19_"
 data_csv <- paste(Sys.Date()-1,".csv",sep="")
-death_f <- paste(file_path_temp,"Deaths_",data_csv,sep="")
-confirmed_f <- paste(file_path_temp,"Confirmed_",data_csv,sep="")
-recovered_f <- paste(file_path_temp,"Recovered_",data_csv,sep="")
+death_f <- paste(file_path_temp,"deaths_global",data_csv,sep="")
+confirmed_f <- paste(file_path_temp,"confirmed_global",data_csv,sep="")
+recovered_f <- paste(file_path_temp,"recovered_global",data_csv,sep="")
 path_final_deaths<- file.path(getwd(),death_f)
 path_final_confirmed<- file.path(getwd(),confirmed_f)
 path_final_recovered<- file.path(getwd(),recovered_f)
