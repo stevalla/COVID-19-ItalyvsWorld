@@ -59,7 +59,7 @@ def _check_data(data, country):
         assert data['data'][0] == '2020-02-24T18:00:00'
     elif country == 'world':
         columns = ['Province/State', 'Country/Region', 'Lat', 'Long']
-        assert '1/22/20' in data.columns
+        assert '1/22/20' in data.columns or '1/22/2020' in data.columns
     assert all(d in data.columns for d in columns)
 
 
