@@ -105,9 +105,9 @@ def reshape_world_data(unified, data, csv_file, current_data):
     
     if file_type == 'recovered':
         new_dates = []
-        for data in current_data['date'].values:
+        for data in data['date'].values:
             new_dates.append(data[:7])
-        current_data['date'] = new_dates
+        data['date'] = new_dates
             
     # drop time_series
     data.drop(columns=time_series.columns, inplace=True, axis=1)
