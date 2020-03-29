@@ -5,7 +5,12 @@ if __name__ == '__main__':
 
     covid.logistic_curves()
     print()
+
+    covid.world_scatter_swab()
+    print()
+
     covid.italy_scatter_swab()
     print()
-    covid.histograms()
+
+    covid.histograms_per_country()
     print()

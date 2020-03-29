@@ -1,13 +1,12 @@
 import logging
 
-import matplotlib.pyplot as plt
-
 from sklearn.utils import shuffle, validation
 from sklearn.exceptions import NotFittedError
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
+from covid_analysis.plotter import Plotter
 log = logging.getLogger(__name__)
 
 
@@ -72,9 +71,7 @@ class Regressor:
             self.evaluate_model()
 
     def plot_y_over_x(self):
-        xs = self._xs.values.reshape(-1, 1)
-        plt.scatter(self._xs, self._ys, c='steelblue', edgecolor='white', s=70)
-        plt.plot(self._xs, self._model.predict(xs), color='black', lw=2)
-        plt.xlabel('Swabs')
-        plt.ylabel('Confirmed')
-        plt.show()
+        plotter = Plotter(self._xs)
+        xs_pred = self._xs.values.reshape(-1, 1)
+        ys_pred = self._model.predict(xs_pred)
+        plotter.scatter_swabs_world(self._xs, self._ys, ys_pred)

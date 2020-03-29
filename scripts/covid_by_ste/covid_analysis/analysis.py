@@ -9,9 +9,10 @@ log = logging.getLogger(__name__)
 
 sep = '='*50
 DATA = 'cleaned/total.csv'
+ITALY_DATA = 'cleaned/italy.csv'
 
 
-def grow_rate():
+def grow_rate_per_country():
     analyzer = CovidAnalyzer([DATA])
     plotter = Plotter(analyzer.data)
     log.info('>>> Generating grow rates...')
@@ -26,7 +27,7 @@ def logistic_curves():
     plotter.plot_logistic_curve(analyzer.data)
 
 
-def histograms():
+def histograms_per_country():
     analyzer = CovidAnalyzer([DATA])
     plotter = Plotter(analyzer.data)
     log.info('>>> Plotting histograms per country at {}'.format(yesterday()))
@@ -34,8 +35,8 @@ def histograms():
     plotter.histograms(hist_data)
 
 
-def swab_regression():
-    analyzer = CovidAnalyzer([DATA])
+def world_scatter_swab():
+    analyzer = CovidAnalyzer([ITALY_DATA])
     log.info(">>> Let's see if the Confirmed has some bias coming from swabs...")
     data = analyzer.data
     xs = data['tamponi']
@@ -46,7 +47,7 @@ def swab_regression():
 
 
 def italy_scatter_swab():
-    analyzer = CovidAnalyzer(['cleaned/italy.csv'])
+    analyzer = CovidAnalyzer([ITALY_DATA])
     plotter = Plotter(analyzer.data)
     log.info(">>> Italy analysis")
     data = analyzer.data
@@ -59,13 +60,12 @@ def italy_scatter_swab():
 if __name__ == '__main__':
     log.info('{0:} Starting analysis {0:}'.format(sep))
 
-    # grow_rate(analyzer) TODO: check if it runs
-
-    # swab_regression() TODO: QA
-
     # logistic_curves() # DONE
+
+    # world_scatter_swab() # DONE
 
     # italy_scatter_swab() # DONE
 
-    # histograms() # DONE
+    # histograms_per_country() # DONE
 
+    grow_rate_per_country() # TODO: check if it runs

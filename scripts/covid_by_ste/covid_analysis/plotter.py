@@ -161,31 +161,43 @@ class Plotter:
         ax.set_xlabel('Swabs')
         ax.set_ylabel('Confirmed')
         ax.grid(True, color="grey", linestyle='--', lw=.02)
+        self._merge_pdf(fig, 'italy_swabs_vs_confirmed.pdf')
 
+    def scatter_swabs_world(self, xs, ys, ys_pred):
+        fig, ax = plt.subplots(figsize=(15, 8), )
+        ax.scatter(xs, ys, c='steelblue', edgecolor='white', s=70)
+        ax.plot(xs, ys_pred, color='black', lw=2)
+        plt.title('Number of swabs and confirmed for every country and day',
+                  fontsize=30)
+        plt.xlabel('Swabs')
+        plt.ylabel('Confirmed')
+        self._merge_pdf(fig, 'world_swabs_vs_confirmed.pdf')
+
+    def _merge_pdf(self, fig, final_path):
         tmp_path = os.path.join(DIRS['result'], 'tmp.pdf')
-        italy_path = os.path.join(DIRS['result'], 'italy_swabs_vs_confirmed.pdf')
+        final_path = os.path.join(DIRS['result'], final_path)
         merged_filepath = os.path.join(DIRS['result'], 'merged.pdf')
 
         pdf = PdfPages(tmp_path)
         pdf.savefig(fig)
         pdf.close()
-        self._merge_pdf(italy_path, tmp_path)
-        os.rename(merged_filepath, italy_path)
-        os.remove(tmp_path)
-
-    def _merge_pdf(self, file1, file2):
         output = PdfFileWriter()
-        pdf1 = PdfFileReader(open(file1, "rb"))
-        pdf2 = PdfFileReader(open(file2, "rb"))
+        pdf1 = PdfFileReader(open(tmp_path, "rb"))
 
         for page in pdf1.pages:
             output.addPage(page)
-        for page in pdf2.pages:
-            output.addPage(page)
+        try:
+            pdf2 = PdfFileReader(open(final_path, "rb"))
+            for page in pdf2.pages:
+                output.addPage(page)
+        except FileNotFoundError:
+            pass
 
-        outfile = open(os.path.join(DIRS['result'], 'merged.pdf'), "wb")
+        outfile = open(merged_filepath, "wb")
         output.write(outfile)
         outfile.close()
+        os.rename(merged_filepath, final_path)
+        os.remove(tmp_path)
 
     def _set_subplot_prop(self, ax, title):
         ax.set_facecolor("white")
