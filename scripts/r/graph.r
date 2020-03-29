@@ -6,9 +6,9 @@ library(data.table)
 #creo path ai file con directory dinamica
 file_path_temp <- "data/history/world/time_series_covid19_"
 data_csv <- paste(Sys.Date()-1,".csv",sep="")
-death_f <- paste(file_path_temp,"deaths_global",data_csv,sep="")
-confirmed_f <- paste(file_path_temp,"confirmed_global",data_csv,sep="")
-recovered_f <- paste(file_path_temp,"recovered_global",data_csv,sep="")
+death_f <- paste(file_path_temp,"deaths_global_",data_csv,sep="")
+confirmed_f <- paste(file_path_temp,"confirmed_global_",data_csv,sep="")
+recovered_f <- paste(file_path_temp,"recovered_global_",data_csv,sep="")
 path_final_deaths<- file.path(getwd(),death_f)
 path_final_confirmed<- file.path(getwd(),confirmed_f)
 path_final_recovered<- file.path(getwd(),recovered_f)
@@ -47,7 +47,7 @@ death <- unlist(death)
 confirmed<-unlist(confirmed)
 recovered<-unlist(recovered)
 #tabella finale
-new_table <- data.frame(datario,countries,provinces,death,confirmed,recovered)
+new_table <- data.frame(datario,countries,provinces,death,confirmed)
 
 ################## GRAFICI PER PAESE ############################
 
@@ -74,12 +74,12 @@ f<-0
     world_new <- world[datario == i]
     death[f] <- sum(world_new[,4])
     confirmed[f] <-  sum(world_new[,5])
-    recovered[f] <- sum(world_new[,6])
+    # recovered[f] <- sum(world_new[,6])
     areas[f] <- c
   
   }
 
-  table <- data.frame(areas,death,confirmed,recovered)
+  table <- data.frame(areas,death,confirmed)
   table_final <- rbind(table_final,table)
 }
 
