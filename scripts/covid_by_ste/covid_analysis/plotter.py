@@ -46,7 +46,7 @@ class Plotter:
         fig, ax = plt.subplots(figsize=(24, 11))
         ax.set_xlabel('Cumulative distributions', fontsize=32)
         ax.xaxis.set_label_coords(0.5, -0.22)
-        ax.set_ylabel('Confirmed | Recovered', fontsize=22)
+        ax.set_ylabel('confirmed | recovered', fontsize=22)
         ax.set_facecolor("white")
         plt.xticks(fontsize=22)
         plt.yticks(fontsize=22)
@@ -54,13 +54,13 @@ class Plotter:
         grouped = data.groupby('date').sum()[STATUS_TYPES]
         for i, s in enumerate(STATUS_TYPES):
             tmp = ax
-            if s == 'Deaths':
+            if s == 'deaths':
                 ax2 = ax.twinx()
                 ax2.set_ylabel(s, fontsize=22)
                 tmp = ax2
             lines += tmp.plot(grouped.index, grouped[s], color=colors[i],
                               label=s, lw=5)
-            if s == 'Confirmed':
+            if s == 'confirmed':
                 tmp.fill_between(grouped[s].index, grouped[s],
                                  grouped[STATUS_TYPES[i - 1]],
                                  color=colors[i], alpha=0.3)
