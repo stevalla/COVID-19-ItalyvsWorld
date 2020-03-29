@@ -9,30 +9,33 @@ from covid_analysis.regressor import Regressor
 log = logging.getLogger(__name__)
 
 sep = '='*50
-
-# analyzer = CovidAnalyzer(['cleaned/total.csv'])
-# plotter = Plotter(analyzer.data)
-
+DATA = 'cleaned/total.csv'
 
 def grow_rate():
+    analyzer = CovidAnalyzer([DATA])
+    plotter = Plotter(analyzer.data)
     log.info('>>> Generating grow rates...')
     grow_rates = analyzer.grow_rate_per_country()
     plotter.plot_grow_rate_per_country(grow_rates)
 
 
 def logistic_curves():
+    analyzer = CovidAnalyzer([DATA])
+    plotter = Plotter(analyzer.data)
     log.info('>>> Logistic curve at {}'.format(yesterday()))
     plotter.plot_logistic_curve(analyzer.data)
 
 
 def histograms():
+    analyzer = CovidAnalyzer([DATA])
+    plotter = Plotter(analyzer.data)
     log.info('>>> Plotting histograms per country at {}'.format(yesterday()))
     hist_data = analyzer.histograms_per_country()
     plotter.histograms(hist_data)
 
 
 def swab_regression():
-    analyzer = CovidAnalyzer(['cleaned/italy.csv'])
+    analyzer = CovidAnalyzer([DATA])
     log.info(">>> Let's see if the Confirmed has some bias coming from swabs...")
     data = analyzer.data
     xs = data['tamponi']
@@ -43,7 +46,7 @@ def swab_regression():
 
 
 def italy_scatter_swab():
-    analyzer = CovidAnalyzer(['cleaned/italy.csv'])
+    analyzer = CovidAnalyzer([DATA])
     plotter = Plotter(analyzer.data)
     log.info(">>> Italy analysis")
     data = analyzer.data
@@ -64,6 +67,4 @@ if __name__ == '__main__':
     # histograms() TODO: QA
 
     # swab_regression()
-
-    # italy_scatter_swab()
 
