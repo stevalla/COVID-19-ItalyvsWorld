@@ -14,3 +14,6 @@ if __name__ == '__main__':
 
     covid.histograms_per_country()
     print()
+
+    covid.grow_rate_per_country()
+    print()

@@ -27,23 +27,6 @@ class CovidAnalyzer:
         increments = self._prepare_for_plotting(increments)
         return increments
 
-    def grow_rate_per_country(self):
-        # TODO: refactor (it doesn't work right now)
-        data_ = self._data_factory.get_data()
-        countries = data_[COUNTRY].unique()
-
-        grow_rates = {}
-        for c in countries:
-            grow_rates[c] = pd.DataFrame()
-            data = data_[data_[COUNTRY] == c].copy()
-            data = data.groupby([COUNTRY, 'date']).agg('sum')
-            for s in STATUS_TYPES:
-                serie = data[s].unstack('date')
-                grow_rates[c]['date'] = serie.columns.values
-                values = serie.values.reshape(-1)
-                grow_rates[c][s] = self._calculate_grow_rate(values)
-        return grow_rates
-
     def _calculate_increment_per_day(self, serie):
         increments = np.zeros(serie.shape)
         values = serie.values
@@ -52,15 +35,31 @@ class CovidAnalyzer:
         res = pd.DataFrame(increments, columns=serie.columns, index=serie.index)
         return res
 
+    def grow_rate_per_country(self):
+        all_data = self._data_factory.get_data()
+        country_grouped = all_data.groupby([COUNTRY, 'date']).sum()[STATUS_TYPES]
+
+        grow_rates = {}
+        for s in STATUS_TYPES:
+            ts = country_grouped[s].unstack(COUNTRY, fill_value=0)
+            grow_rates[s] = self._calculate_grow_rate(ts)
+        sorted_cols = self._sort_cols_by_confirmed(
+            country_grouped['confirmed'].unstack(COUNTRY, fill_value=-1)
+        )
+        for s in STATUS_TYPES:
+            grow_rates[s] = grow_rates[s].reindex(columns=sorted_cols)
+        return grow_rates
+
     def _calculate_grow_rate(self, serie):
-        grow_rate = np.zeros(serie.shape[0])
-        for day in range(1, serie.shape[0] + 1):
-            if serie[day - 1] == 0:
-                grow_rate[day] = 0
-            else:
-                grow_rate[day] = (serie[day] - serie[day - 1]) \
-                                 / serie[day - 1] * 100
-        return grow_rate
+        grow_rate = np.zeros(serie.shape)
+        values = serie.values
+        for day in range(1, serie.shape[0]):
+            np.seterr(all='ignore')
+            grow_rate[day] = abs(np.divide(values[day] - values[day - 1],
+                                           values[day - 1]) * 100)
+        grow_rate[np.isinf(grow_rate)] = np.nan
+        res = pd.DataFrame(grow_rate, columns=serie.columns, index=serie.index)
+        return res
 
     def _prepare_for_plotting(self, data):
         prepared = {}
