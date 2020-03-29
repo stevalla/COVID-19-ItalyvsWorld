@@ -63,7 +63,7 @@ class Plotter:
         legend_kwargs = dict(bbox_to_anchor=(.5, 1), edgecolor='white',
                              loc='lower center', ncol=3, fontsize=22,
                              columnspacing=6, handlelength=5, facecolor='white')
-        colors = ['b', 'y', 'c']
+        colors = ['c', 'r']
         lines = []
 
         fig, ax = plt.subplots(figsize=(24, 11))
@@ -74,13 +74,8 @@ class Plotter:
                 tmp = ax.twinx()
             lines += tmp.plot(grouped.index, grouped[s], color=colors[i],
                               label=s, lw=5)
-            if s == 'confirmed':
-                tmp.fill_between(grouped[s].index, grouped[s],
-                                 grouped[STATUS_TYPES[i - 1]],
-                                 color=colors[i], alpha=0.3)
-            else:
-                tmp.fill_between(grouped[s].index, grouped[s], 0,
-                                 color=colors[i], alpha=0.3)
+            tmp.fill_between(grouped[s].index, grouped[s], 0,
+                             color=colors[i], alpha=0.3)
             tmp.set_ylabel(s, fontsize=22)
 
         fig.autofmt_xdate()

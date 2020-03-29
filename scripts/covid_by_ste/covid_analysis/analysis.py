@@ -61,7 +61,7 @@ if __name__ == '__main__':
     # FOR TESTING
     log.info('{0:} Starting analysis {0:}'.format(sep))
 
-    # logistic_curves() # DONE
+    logistic_curves() # DONE
 
     # world_scatter_swab() # DONE
 
