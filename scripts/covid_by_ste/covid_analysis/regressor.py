@@ -21,11 +21,11 @@ class Regressor:
         self._model = LinearRegression()
 
     @property
-    def xs(self):
+    def get_xs(self):
         return self._xs
 
     @property
-    def ys(self):
+    def get_ys(self):
         return self._ys
 
     @property

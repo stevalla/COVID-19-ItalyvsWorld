@@ -6,6 +6,9 @@ from covid_analysis.utils import STATUS_TYPES, yesterday
 from data_preparation.data_preprocessing import DataPreprocessing, DATA_DIR
 
 
+COUNTRY = 'Country/Region'
+
+
 class WorldPreprocessing(DataPreprocessing):
 
     def __init__(self, country='world'):
@@ -54,7 +57,7 @@ class WorldPreprocessing(DataPreprocessing):
 
             # check all region are ordered the same
             if not new_data.empty:
-                for col in ['Province/State', 'Country/Region']:
+                for col in ['Province/State', COUNTRY]:
                     assert all([r1 == r2 or all(pd.isna([r1, r2]))
                                 for r1, r2 in zip(new_data[col], tmp[col])])
             new_data = pd.concat([new_data, tmp])
@@ -64,11 +67,11 @@ class WorldPreprocessing(DataPreprocessing):
         if self.preprocessed.empty:
             raise ValueError("Preprocessed data empty")
         data = self.preprocessed
-        data = data[data['Country/Region'] != 'Italy']
+        data = data[data[COUNTRY] != 'Italy']
         return data
 
     def check_data(self, data):
-        columns = ['Province/State', 'Country/Region', 'Lat', 'Long']
+        columns = ['Province/State', COUNTRY, 'Lat', 'Long']
         assert '1/22/20' in data.columns
         yest = yesterday().timetuple()
         yest = '{0[1]:}/{0[2]:}/{0[0]}'.format(yest)
