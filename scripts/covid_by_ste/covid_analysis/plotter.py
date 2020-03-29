@@ -1,5 +1,6 @@
 import os
 import logging
+import warnings
 
 import numpy as np
 import seaborn as sb
@@ -13,6 +14,7 @@ from covid_analysis.utils import yesterday, wrapper_store_pdf
 from covid_analysis.utils import KernelEstimationError
 
 log = logging.getLogger(__name__)
+warnings.simplefilter("error", (RuntimeWarning, UserWarning))
 
 
 class Plotter:
@@ -46,7 +48,6 @@ class Plotter:
         fig, ax = plt.subplots(figsize=(24, 11))
         ax.set_xlabel('Cumulative distributions', fontsize=32)
         ax.xaxis.set_label_coords(0.5, -0.22)
-        ax.set_ylabel('confirmed | recovered', fontsize=22)
         ax.set_facecolor("white")
         plt.xticks(fontsize=22)
         plt.yticks(fontsize=22)
@@ -55,9 +56,7 @@ class Plotter:
         for i, s in enumerate(STATUS_TYPES):
             tmp = ax
             if s == 'deaths':
-                ax2 = ax.twinx()
-                ax2.set_ylabel(s, fontsize=22)
-                tmp = ax2
+                tmp = ax.twinx()
             lines += tmp.plot(grouped.index, grouped[s], color=colors[i],
                               label=s, lw=5)
             if s == 'confirmed':
@@ -67,7 +66,7 @@ class Plotter:
             else:
                 tmp.fill_between(grouped[s].index, grouped[s], 0,
                                  color=colors[i], alpha=0.3)
-
+            tmp.set_ylabel(s, fontsize=22)
         self._apply_basic_format_plt(fig=fig, grid=True)
         leg = ax.legend(lines, [line.get_label() for line in lines],
                         bbox_to_anchor=(.5, 1), edgecolor='white',
@@ -100,7 +99,7 @@ class Plotter:
 
             for c in countries:
                 log.info('Country: {} first occ at {}'.format(c, first_occs[c]))
-                fig, axs = plt.subplots(ncols=3, figsize=(40, 15))
+                fig, axs = plt.subplots(ncols=2, figsize=(40, 15))
                 plt.suptitle(c, fontsize=50)
                 for col, ax, (s, data) in zip(colors, axs, status_dict.items()):
 
@@ -120,6 +119,9 @@ class Plotter:
                         sb.kdeplot(filtered, ax=ax2, color=col, **kde_kwargs)
                     except KernelEstimationError as e:
                         text = '[Error: {}] on kernel estimation of {}_{}'
+                        log.info(text.format(e, c, s))
+                    except (RuntimeWarning, UserWarning) as e:
+                        text = '[Error: {}] only one occurrence of {}_{}'
                         log.info(text.format(e, c, s))
 
                     # last observation
@@ -161,7 +163,7 @@ class Plotter:
         ax.grid(True, color="grey", linestyle='--', lw=.02)
 
         tmp_path = os.path.join(DIRS['result'], 'tmp.pdf')
-        italy_path = os.path.join(DIRS['result'], 'italy_scatter.pdf')
+        italy_path = os.path.join(DIRS['result'], 'italy_swabs_vs_confirmed.pdf')
         merged_filepath = os.path.join(DIRS['result'], 'merged.pdf')
 
         pdf = PdfPages(tmp_path)

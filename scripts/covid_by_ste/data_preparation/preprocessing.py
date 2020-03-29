@@ -56,6 +56,10 @@ def preprocess_data():
     if check_consistency(total):
         log.info('New data loaded correctly')
 
+    log.info('Total number of countries is {}'.format(
+        len(list(total['Country/Region'].unique()))
+    ))
+
 
 def check_consistency(data):
     check = True

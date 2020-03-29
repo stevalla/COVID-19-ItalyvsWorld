@@ -11,7 +11,7 @@ class WorldPreprocessing(DataPreprocessing):
     def __init__(self, country='world'):
         super().__init__(country)
         self.files = [f for f in self.files
-                      if re.search('^.*(recovered|confirmed|deaths).*$', f)]
+                      if re.search('^.*(confirmed|deaths).*$', f)]
 
     def reshape_data(self):
         new_data = pd.DataFrame()
@@ -34,23 +34,31 @@ class WorldPreprocessing(DataPreprocessing):
                 print("The data are up to date with those in world")
                 return
 
-            for serie in time_series.columns:
-                tmp = data.copy()
-                tmp['date'] = serie
-                tmp[file_type] = time_series[serie]
-
-                # check all region are ordered the same
-                if not new_data.empty:
-                    for col in ['Province/State', 'Country/Region']:
-                        assert all([r1 == r2 or all(pd.isna([r1, r2]))
-                                    for r1, r2 in zip(new_data[col], tmp[col])]) \
-                               or file_type == 'recovered'
-                new_data = pd.concat([new_data, tmp])
+            tmp = self._load_series(data, time_series, file_type)
+            if new_data.empty:
+                new_data = tmp
+            else:
+                new_data = pd.concat([new_data, tmp[file_type]], axis=1)
 
         self.preprocessed = pd.concat([self.preprocessed, new_data])
         self._integer_with_nan()
         self.preprocessed.to_csv('{}/cleaned/world.csv'.format(DATA_DIR),
                                  index=False, float_format='%.5f')
+
+    def _load_series(self, data, time_series, file_type):
+        new_data = pd.DataFrame()
+        for serie in time_series.columns:
+            tmp = data.copy()
+            tmp['date'] = serie
+            tmp[file_type] = time_series[serie]
+
+            # check all region are ordered the same
+            if not new_data.empty:
+                for col in ['Province/State', 'Country/Region']:
+                    assert all([r1 == r2 or all(pd.isna([r1, r2]))
+                                for r1, r2 in zip(new_data[col], tmp[col])])
+            new_data = pd.concat([new_data, tmp])
+        return new_data
 
     def make_consistent(self):
         if self.preprocessed.empty:

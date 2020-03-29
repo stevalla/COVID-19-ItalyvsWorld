@@ -1,4 +1,3 @@
-import sys
 import logging
 
 from covid_analysis.utils import yesterday
@@ -10,6 +9,7 @@ log = logging.getLogger(__name__)
 
 sep = '='*50
 DATA = 'cleaned/total.csv'
+
 
 def grow_rate():
     analyzer = CovidAnalyzer([DATA])
@@ -57,18 +57,15 @@ def italy_scatter_swab():
 
 
 if __name__ == '__main__':
-    file = sys.argv[1]
-    filepaths = {'total': 'cleaned/total.csv', 'italy': 'cleaned/italy.csv'}
-
     log.info('{0:} Starting analysis {0:}'.format(sep))
 
     # grow_rate(analyzer) TODO: check if it runs
 
-    # histograms() TODO: QA
-
     # swab_regression() TODO: QA
 
-    logistic_curves()  # DONE
+    # logistic_curves() # DONE
 
-    italy_scatter_swab()  # DONE
+    # italy_scatter_swab() # DONE
+
+    # histograms() # DONE
 

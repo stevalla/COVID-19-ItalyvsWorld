@@ -24,7 +24,7 @@ logging.captureWarnings(True)
 
 # CONSTANTS
 VALID_DATASETS = ['italy', 'world', 'total']
-STATUS_TYPES = ['recovered', 'confirmed', 'deaths']
+STATUS_TYPES = ['confirmed', 'deaths']
 
 # PLOT STYLE
 matplotlib.style.use('ggplot')

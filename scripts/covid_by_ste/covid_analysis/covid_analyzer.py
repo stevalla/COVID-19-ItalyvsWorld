@@ -64,7 +64,7 @@ class CovidAnalyzer:
 
     def _prepare_for_plotting(self, data):
         prepared = {}
-        sorted_cols = self._sort_cols_by_confirmed(data['Confirmed'])
+        sorted_cols = self._sort_cols_by_confirmed(data['confirmed'])
         for s in STATUS_TYPES:
             prepared[s] = data[s].reindex(columns=sorted_cols)
         return prepared
