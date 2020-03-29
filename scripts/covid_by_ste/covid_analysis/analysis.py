@@ -46,7 +46,7 @@ def swab_regression():
 
 
 def italy_scatter_swab():
-    analyzer = CovidAnalyzer([DATA])
+    analyzer = CovidAnalyzer(['cleaned/italy.csv'])
     plotter = Plotter(analyzer.data)
     log.info(">>> Italy analysis")
     data = analyzer.data
@@ -66,5 +66,9 @@ if __name__ == '__main__':
 
     # histograms() TODO: QA
 
-    # swab_regression()
+    # swab_regression() TODO: QA
+
+    logistic_curves()  # DONE
+
+    italy_scatter_swab()  # DONE
 
