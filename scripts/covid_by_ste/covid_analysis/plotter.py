@@ -160,15 +160,16 @@ class Plotter:
         ax.set_ylabel('Confirmed')
         ax.grid(True, color="grey", linestyle='--', lw=.02)
 
-        filepath = os.path.join(DIRS['result'], 'tmp.pdf')
+        tmp_path = os.path.join(DIRS['result'], 'tmp.pdf')
         italy_path = os.path.join(DIRS['result'], 'italy_scatter.pdf')
         merged_filepath = os.path.join(DIRS['result'], 'merged.pdf')
 
-        pdf = PdfPages(filepath)
+        pdf = PdfPages(tmp_path)
         pdf.savefig(fig)
         pdf.close()
-        self._merge_pdf(italy_path, filepath)
+        self._merge_pdf(italy_path, tmp_path)
         os.rename(merged_filepath, italy_path)
+        os.remove(tmp_path)
 
     def _merge_pdf(self, file1, file2):
         output = PdfFileWriter()

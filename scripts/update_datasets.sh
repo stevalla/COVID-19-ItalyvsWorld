@@ -10,16 +10,26 @@ yesterday=`date -d "1 day ago" +"%Y-%m-%d"`
 # set pythonpath env variable
 export PYTHONPATH="$folder"/covid_by_ste
 
-# preprocessing world data
-echo "Scanning world"
-bash "$folder"/download_data.sh world
+declare -a datasets=("world" "italy")
 
-# preprocessing italian data
-echo "Scanning Italy"
-bash "$folder"/download_data.sh italy
+echo "Downloading data"
+for country in "${datasets[@]}"; do
+    # preprocessing data
+    echo "Scanning ${country}"
+    bash "$folder"/download_data.sh ${country}
+done
 
-# aggregate italian and world data
-echo "Aggregating"
-python3 -c "import preprocessing as pr; pr.aggregate_data()"
+echo "Preprocessing data"
+python3 -c "import data_preparation.preprocessing as pr; pr.preprocess_data()"
 
-# TODO: add check of new data
+for country in "${datasets[@]}"; do
+    # Store history
+    for file in "$folder"/../data/"$country"/*.csv; do
+        filename=$(basename -- "$file")
+        f="${filename%.*}"
+        mv "$file" "$folder"/../data/history/"$country"/"$f"_"$yesterday".csv
+    done
+    # Cleaning
+    rm -r "$folder"/${country}_data
+    rm -r "$folder"/../data/"$country"
+done

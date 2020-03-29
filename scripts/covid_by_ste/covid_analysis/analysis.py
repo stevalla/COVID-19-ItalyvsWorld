@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 
 sep = '='*50
 
-analyzer = CovidAnalyzer(['cleaned/total.csv'])
-plotter = Plotter(analyzer.data)
+# analyzer = CovidAnalyzer(['cleaned/total.csv'])
+# plotter = Plotter(analyzer.data)
 
 
 def grow_rate():
@@ -49,7 +49,7 @@ def italy_scatter_swab():
     data = analyzer.data
     rgr = Regressor(data['tamponi'], data['totale_casi'])
     rgr = rgr.fit()
-    log.info("Plotting scatter trend of confirmed over number of swabs each day")
+    log.info("Plotting Italy confirmed trend over the number of daily swabs")
     plotter.scatter_swabs(data, rgr.predict(data['tamponi']))
 
 

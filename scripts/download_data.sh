@@ -26,23 +26,11 @@ if [[ "$country" == "italy" ]]; then
 else
     mkdir "$folder"/world_data
     working_folder="$folder"/world_data
-    svn checkout "$link" "$working_folder"
+    svn -q checkout "$link" "$working_folder"
     working_folder="$working_folder"
 fi
 
 # Copy data from working folder
-cp "$working_folder"/*.csv "$data_folder"
+mkdir "$data_folder"/"$country"
+cp "$working_folder"/*.csv "$data_folder"/"$country"
 
-# Update data
-python3 "$folder"/covid_by_ste/preprocessing/preprocessing.py "$country"
-
-# Store history
-for file in "$data_folder"/*.csv; do
-    filename=$(basename -- "$file")
-    f="${filename%.*}"
-    mv "$file" "$data_folder"/history/"$country"/"$f"_"$yesterday".csv
-done
-
-# Cleaning
-rm -r "$working_folder"
-rm -f "$data_folder"/*.csv
