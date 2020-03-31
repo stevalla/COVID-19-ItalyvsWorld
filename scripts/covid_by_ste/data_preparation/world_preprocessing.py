@@ -78,7 +78,7 @@ class WorldPreprocessing(DataPreprocessing):
         assert '1/22/20' in data.columns or '1/22/2020' in data.columns
         yest = yesterday().timetuple()
         yest = '{0[1]:}/{0[2]:}/{0[0]}'.format(yest)
-        # assert yest in data.columns or yest[:-2] in data.columns
+        assert yest in data.columns or yest[:-2] in data.columns
         assert all(d in data.columns for d in columns)
 
     def _integer_with_nan(self):

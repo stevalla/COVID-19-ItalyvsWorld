@@ -53,8 +53,8 @@ def preprocess_data():
         total[c] = total[c].fillna(-1)
     total.to_csv('{}total.csv'.format(data_dir), index=False,
                  float_format='%.5f')
-    # if check_consistency(total):
-    #     log.info('New data loaded correctly')
+    if check_consistency(total):
+        log.info('New data loaded correctly')
 
     log.info('Total number of countries is {}'.format(
         len(list(total['Country/Region'].unique()))
