@@ -4,7 +4,7 @@ import logging.config
 import matplotlib.style
 
 from datetime import date, timedelta
-# from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.backends.backend_pdf import PdfPages
 
 # WARNINGS
 warnings.simplefilter(action='ignore', category=FutureWarning)

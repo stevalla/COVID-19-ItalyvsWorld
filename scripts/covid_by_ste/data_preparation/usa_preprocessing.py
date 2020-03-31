@@ -2,7 +2,7 @@ import re
 
 import pandas as pd
 
-from covid_analysis.utils import STATUS_TYPES, COLUMNS_ANALYSIS
+from covid_analysis.utils import COLUMNS_ANALYSIS
 from data_preparation.world_preprocessing import WorldPreprocessing, COUNTRY
 
 
