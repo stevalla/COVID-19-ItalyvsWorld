@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 
 def preprocess_data():
-    csvs = ['italy', 'world']
+    csvs = ['italy', 'world', 'usa']
     data_dir = '{}/data/cleaned/'.format(ROOT_DIR)
 
     try:
@@ -23,7 +23,7 @@ def preprocess_data():
     all_data = []
     for csv in csvs:
         preprocesser = getattr(data_preparation, '{}Preprocessing'
-                               .format(csv.capitalize()))()
+                               .format(csv.capitalize()))(csv)
         preprocesser.reshape_data()
         all_data.append(preprocesser.make_consistent())
 
@@ -53,8 +53,8 @@ def preprocess_data():
         total[c] = total[c].fillna(-1)
     total.to_csv('{}total.csv'.format(data_dir), index=False,
                  float_format='%.5f')
-    if check_consistency(total):
-        log.info('New data loaded correctly')
+    # if check_consistency(total):
+    #     log.info('New data loaded correctly')
 
     log.info('Total number of countries is {}'.format(
         len(list(total['Country/Region'].unique()))
@@ -81,7 +81,11 @@ def check_consistency(data):
             assert np.all(data_new[s].values >= data_old[s].values)
         except AssertionError:
             check = False
-            log.info("Inconsistency in the time series {}".format(s))
+            countries = data[data.index.isin(
+                data_new[s][~(data_new[s].values >= data_old[s].values)].index
+            )]['Country/Region'].unique()
+            log.info("Inconsistency in the time series {} for countries {}"
+                     .format(s, countries))
     return check
 
 

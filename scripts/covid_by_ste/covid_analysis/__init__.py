@@ -11,4 +11,4 @@ from .utils import DIRS, STATUS_TYPES, VALID_DATASETS, yesterday
 from .data_handler import DatasetFactory
 from .regressor import Regressor
 from .analysis import grow_rate_per_country, logistic_curves, histograms_per_country
-from .analysis import italy_scatter_swab, world_scatter_swab
+from .analysis import italy_scatter_swab

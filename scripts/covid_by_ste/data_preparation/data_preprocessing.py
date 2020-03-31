@@ -9,6 +9,7 @@ from covid_analysis.utils import DATA_DIR
 class DataPreprocessing:
 
     def __init__(self, country):
+        self.country = country
         try:
             self.preprocessed = pd.read_csv('{}../cleaned/{}.csv'
                                             .format(DATA_DIR, country))

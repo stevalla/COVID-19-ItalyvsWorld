@@ -24,10 +24,15 @@ if [[ "$country" == "italy" ]]; then
     working_folder="$folder"/italy_data
     wget -q -P "$working_folder" "$link"
 else
-    mkdir "$folder"/world_data
-    working_folder="$folder"/world_data
+    mkdir "$folder"/"$country"_data
+    working_folder="$folder"/"$country"_data
     svn -q checkout "$link" "$working_folder"
     working_folder="$working_folder"
+    if echo "$country" | grep -q "usa"; then
+        rm "$working_folder"/*_global.csv
+    else
+        rm "$working_folder"/*_US.csv
+    fi
 fi
 
 # Copy data from working folder

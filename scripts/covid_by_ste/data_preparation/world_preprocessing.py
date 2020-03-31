@@ -11,10 +11,11 @@ COUNTRY = 'Country/Region'
 
 class WorldPreprocessing(DataPreprocessing):
 
-    def __init__(self, country='world'):
+    def __init__(self, country):
         super().__init__(country)
         self.files = [f for f in self.files
-                      if re.search('^.*(confirmed|deaths).*$', f)]
+                      if re.search('^.*(confirmed|deaths)_global.csv$', f)]
+        self._csv_regex = '^.*_covid19_(.*)_global.csv$'
 
     def reshape_data(self):
         new_data = pd.DataFrame()
@@ -22,11 +23,12 @@ class WorldPreprocessing(DataPreprocessing):
             data = pd.read_csv(csv)
             self.check_data(data)
 
-            file_type = re.search('^.*_covid19_(.*)_global.csv$', csv).group(1)
-            time_series = data.iloc[:, 4:]
+            file_type = re.search(self._csv_regex, csv).group(1)
+            start_index = [i for i, c in enumerate(data.columns)
+                           if c in ['1/22/2020', '1/22/20']][0]
+            time_series = data.iloc[:, start_index:]
 
             data.drop(columns=time_series.columns, inplace=True, axis=1)
-            assert data.shape[1] == 4
 
             if not self.preprocessed.empty:
                 dates_to_add = (d for d in time_series.columns
@@ -45,14 +47,15 @@ class WorldPreprocessing(DataPreprocessing):
 
         self.preprocessed = pd.concat([self.preprocessed, new_data])
         self._integer_with_nan()
-        self.preprocessed.to_csv('{}/cleaned/world.csv'.format(DATA_DIR),
+        self.preprocessed.to_csv('{}/cleaned/{}.csv'.format(DATA_DIR,
+                                                            self.country),
                                  index=False, float_format='%.5f')
 
     def _load_series(self, data, time_series, file_type):
         new_data = pd.DataFrame()
         for serie in time_series.columns:
             tmp = data.copy()
-            tmp['date'] = serie
+            tmp['date'] = '{0[0]:}/{0[1]:}/{0[2]:.2}'.format(serie.split('/'))
             tmp[file_type] = time_series[serie]
 
             # check all region are ordered the same
@@ -72,9 +75,10 @@ class WorldPreprocessing(DataPreprocessing):
 
     def check_data(self, data):
         columns = ['Province/State', COUNTRY, 'Lat', 'Long']
-        assert '1/22/20' in data.columns
+        assert '1/22/20' in data.columns or '1/22/2020' in data.columns
         yest = yesterday().timetuple()
         yest = '{0[1]:}/{0[2]:}/{0[0]}'.format(yest)
+        # assert yest in data.columns or yest[:-2] in data.columns
         assert all(d in data.columns for d in columns)
 
     def _integer_with_nan(self):

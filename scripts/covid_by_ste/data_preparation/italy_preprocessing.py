@@ -7,7 +7,7 @@ from data_preparation.data_preprocessing import DataPreprocessing, DATA_DIR
 
 class ItalyPreprocessing(DataPreprocessing):
 
-    def __init__(self, country='italy'):
+    def __init__(self, country):
         super().__init__(country)
 
     def reshape_data(self):
@@ -21,7 +21,7 @@ class ItalyPreprocessing(DataPreprocessing):
             italy_dates = (d_i for d_w, d_i in d_mapping.items()
                            if d_w not in self.preprocessed['date'].unique())
             if not dates:
-                print("Italy data are up to date")
+                print("Data of Italy is up to date")
                 return
             data = data.loc[data['data'].isin(list(italy_dates))]
 

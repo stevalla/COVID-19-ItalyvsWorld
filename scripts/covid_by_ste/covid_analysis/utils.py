@@ -4,7 +4,7 @@ import logging.config
 import matplotlib.style
 
 from datetime import date, timedelta
-from matplotlib.backends.backend_pdf import PdfPages
+# from matplotlib.backends.backend_pdf import PdfPages
 
 # WARNINGS
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -23,8 +23,10 @@ logging.config.fileConfig(os.path.join(SCRIPT_DIR, 'logging.conf'))
 logging.captureWarnings(True)
 
 # CONSTANTS
-VALID_DATASETS = ['italy', 'world', 'total']
+VALID_DATASETS = ['italy', 'world', 'usa', 'total']
 STATUS_TYPES = ['confirmed', 'deaths']
+COLUMNS_ANALYSIS = ['Province/State', 'Country/Region', 'Lat', 'Long', 'date'] \
+                   + STATUS_TYPES
 
 # PLOT STYLE
 matplotlib.style.use('ggplot')

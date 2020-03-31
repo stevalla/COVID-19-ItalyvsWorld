@@ -35,17 +35,6 @@ def histograms_per_country():
     plotter.histograms(hist_data)
 
 
-def world_scatter_swab():
-    analyzer = CovidAnalyzer([ITALY_DATA])
-    log.info(">>> Let's see if the Confirmed has some bias coming from swabs...")
-    data = analyzer.data
-    xs = data['tamponi']
-    ys = data['totale_casi']
-    rgr = Regressor(xs, ys)
-    rgr.evaluate_model()
-    rgr.plot_y_over_x()
-
-
 def italy_scatter_swab():
     analyzer = CovidAnalyzer([ITALY_DATA])
     plotter = Plotter(analyzer.data)
@@ -61,12 +50,10 @@ if __name__ == '__main__':
     # FOR TESTING
     log.info('{0:} Starting analysis {0:}'.format(sep))
 
-    logistic_curves() # DONE
-
-    # world_scatter_swab() # DONE
+    # logistic_curves() # DONE
 
     # italy_scatter_swab() # DONE
 
     # histograms_per_country() # DONE
 
-    # grow_rate_per_country() # DONE
+    grow_rate_per_country() # DONE
