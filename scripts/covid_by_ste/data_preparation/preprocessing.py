@@ -6,7 +6,9 @@ import numpy as np
 import pandas as pd
 
 from datetime import timedelta
-from covid_analysis.utils import ROOT_DIR, STATUS_TYPES, yesterday
+from covid_analysis.utils import ROOT_DIR, STATUS_TYPES, VALID_DATASETS
+from covid_analysis.utils import yesterday
+
 
 log = logging.getLogger(__name__)
 
@@ -27,8 +29,11 @@ def preprocess_data():
         preprocesser.reshape_data()
         all_data.append(preprocesser.make_consistent())
 
-    all_dates = list(set([d_ for d in [set(d['date']) for d in all_data]
-                          for d_ in d]))
+    # TODO: refactor select the days for each single dataset in order to
+    #   understand if there are missing values for older dates
+    all_dates = list(set([date for set_of_dates in
+                          [set(dataset['date']) for dataset in all_data]
+                          for date in set_of_dates]))
     all_dates.sort(key=lambda d: datetime.datetime.strptime(d, '%m/%d/%y'))
 
     if not total.empty:
@@ -74,12 +79,12 @@ def check_consistency(data):
         assert set(data_old[reg].values) <= set(data_new[reg].values)
     except AssertionError:
         check = False
-        log.info('Inconsistencies in countries')
+        log.warning('Less countries than yesterday!')
 
     for s in STATUS_TYPES:
         try:
             assert np.all(data_new[s].values >= data_old[s].values)
-        except AssertionError:
+        except (AssertionError, ValueError):
             check = False
             countries = data[data.index.isin(
                 data_new[s][~(data_new[s].values >= data_old[s].values)].index
