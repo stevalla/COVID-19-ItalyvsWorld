@@ -14,31 +14,31 @@ log = logging.getLogger(__name__)
 
 
 def preprocess_data():
-    csvs = ['italy', 'world', 'usa']
+    datasets = set(VALID_DATASETS) - {'total'}
     data_dir = '{}/data/cleaned/'.format(ROOT_DIR)
 
     try:
         total = pd.read_csv('{}../cleaned/total.csv'.format(data_dir))
+        total_dates = total['date'].unique()
     except FileNotFoundError:
         total = pd.DataFrame()
+        total_dates = []
 
     all_data = []
-    for csv in csvs:
+    dates_per_dataset = {}
+    for csv in datasets:
         preprocesser = getattr(data_preparation, '{}Preprocessing'
                                .format(csv.capitalize()))(csv)
         preprocesser.reshape_data()
-        all_data.append(preprocesser.make_consistent())
+        data = preprocesser.make_consistent()
+        dates_per_dataset[csv] = [date for date in data['date'].unique()
+                                  if date not in total_dates]
+        all_data.append(data)
 
-    # TODO: refactor select the days for each single dataset in order to
-    #   understand if there are missing values for older dates
-    all_dates = list(set([date for set_of_dates in
-                          [set(dataset['date']) for dataset in all_data]
-                          for date in set_of_dates]))
+    all_dates = list(set([date for list_of_dates in
+                          [dates_per_dataset[dataset] for dataset in datasets]
+                          for date in list_of_dates]))
     all_dates.sort(key=lambda d: datetime.datetime.strptime(d, '%m/%d/%y'))
-
-    if not total.empty:
-        all_dates = tuple(d for d in all_dates if d not in total['date'].unique()
-                          and d in all_data[1]['date'].unique())
 
     for d in all_dates:
         total = pd.concat([total, *[data[data['date'] == d] for data in all_data
@@ -84,7 +84,7 @@ def check_consistency(data):
     for s in STATUS_TYPES:
         try:
             assert np.all(data_new[s].values >= data_old[s].values)
-        except (AssertionError, ValueError):
+        except AssertionError:
             check = False
             countries = data[data.index.isin(
                 data_new[s][~(data_new[s].values >= data_old[s].values)].index
