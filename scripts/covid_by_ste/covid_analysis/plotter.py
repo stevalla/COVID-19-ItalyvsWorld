@@ -176,7 +176,7 @@ class Plotter:
         self._merge_pdf(fig, 'italy_swabs_vs_confirmed.pdf')
 
     def scatter_swabs_world(self, xs, ys, ys_pred):
-        fig, ax = plt.subplots(figsize=(15, 8), )
+        fig, ax = plt.subplots(figsize=(15, 8))
         ax.scatter(xs, ys, c='steelblue', edgecolor='white', s=70)
         ax.plot(xs, ys_pred, color='black', lw=2)
         plt.title('Number of swabs and confirmed for every country and day',
@@ -184,6 +184,37 @@ class Plotter:
         plt.xlabel('Swabs')
         plt.ylabel('Confirmed')
         self._merge_pdf(fig, 'world_swabs_vs_confirmed.pdf')
+
+    def increments_in_time(self, increments, mas):
+        filename = 'moving_avg/{}.pdf'.format(yesterday())
+        filepath = os.path.join(DIRS['result'], filename)
+        legend_text = ['Actual data', '5 days moving average']
+        legend_kwargs = dict(edgecolor='white', facecolor='white')
+        first = self._get_day_first_occurrence(increments)
+
+        def plot_increments_in_time(pdf):
+            for country in list(increments.values())[0].columns:
+                fig, axs = plt.subplots(nrows=2, figsize=(20, 16))
+                for ax, s in zip(axs, STATUS_TYPES):
+                    inc = increments[s][country][first[country]:]
+                    ma = mas[s][country][first[country]:]
+                    ax.bar(inc.index, inc, color='c')
+                    ax.plot(ma.index, ma, linewidth=3, color='b')
+
+                    ax.set_facecolor("white")
+                    ax.set_ylabel('Daily increment', fontsize=24)
+                    ax.set_title('{} - {}'.format(country, s), fontsize=28)
+                    ax.legend(legend_text, **legend_kwargs)
+                    xticks = [d for i, d in
+                              enumerate(list(increments.values())[0].index)
+                              if i % 3 == 0]
+                    ax.set_xticks(xticks)
+                    plt.setp(ax.get_xticklabels(), rotation=30, ha='right')
+                fig.tight_layout()
+                pdf.savefig(fig)
+                plt.close(fig)
+
+        wrapper_store_pdf(plot_increments_in_time, filepath)
 
     def _merge_pdf(self, fig, final_path):
         tmp_path = os.path.join(DIRS['result'], 'tmp.pdf')

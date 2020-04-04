@@ -61,8 +61,8 @@ class WorldPreprocessing(DataPreprocessing):
         assert '1/22/20' in data.columns or '1/22/2020' in data.columns
         yest = yesterday().timetuple()
         yest = '{0[1]:}/{0[2]:}/{0[0]}'.format(yest)
-        # assert yest in data.columns or yest[:-2] in data.columns, \
-        #     print(yest, data.columns[-1])
+        assert yest in data.columns or yest[:-2] in data.columns, \
+            print(yest, data.columns[-1])
         assert all(d in data.columns for d in columns)
 
     def _load_series(self, data, time_series, file_type):

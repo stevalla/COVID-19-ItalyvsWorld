@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+from datetime import timedelta
 from definitions import STATUS_TYPES
 from covid_analysis.data_handler.dataset_factory import DatasetFactory
 
@@ -22,6 +23,11 @@ class CovidAnalyzer:
     def histograms_per_country(self):
         return self._group_by_country_rate_days('increment')
 
+    def increments_in_time(self, ma_days=5):
+        increments = self._group_by_country_rate_days('increment')
+        mas = self._moving_average(increments, ma_days)
+        return increments, mas
+
     def _group_by_country_rate_days(self, rate_op):
         all_data = self._data_factory.get_data()
         country_grouped = all_data.groupby([COUNTRY, 'date']).sum()[STATUS_TYPES]
@@ -39,6 +45,19 @@ class CovidAnalyzer:
             ts = country_grouped[s].unstack(COUNTRY, fill_value=-1)
             rates[s] = func(ts).reindex(columns=sorted_cols)
         return rates
+
+    def _moving_average(self, data, days=5):
+        """ Compute the moving average. The data is expected to be a
+        dictionary of status types and data frames having dates
+        as index. It performs the average by columns. """
+        mas = {}
+        for s in STATUS_TYPES:
+            dates = data[s].index[days:]
+            mas[s] = pd.DataFrame(columns=data[s].columns, index=dates)
+            for end in dates:
+                start = end - timedelta(days=days)
+                mas[s].loc[end] = np.mean(data[s][start:end].values, axis=0)
+        return mas
 
     def _calculate_increment_per_day(self, series):
         increments = np.zeros(series.shape)
