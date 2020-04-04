@@ -8,12 +8,13 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 from cycler import cycler
+from datetime import timedelta
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from matplotlib.ticker import FixedLocator
 from matplotlib.backends.backend_pdf import PdfPages
-from covid_analysis.utils import DIRS, STATUS_TYPES
-from covid_analysis.utils import yesterday, wrapper_store_pdf
-from covid_analysis.utils import KernelEstimationError
+
+from utils import wrapper_store_pdf
+from definitions import DIRS, STATUS_TYPES, yesterday, KernelEstimationError
 
 log = logging.getLogger(__name__)
 warnings.simplefilter("error", (RuntimeWarning, UserWarning))
@@ -28,20 +29,24 @@ class Plotter:
         filename = 'grow_rates/grow_rate_{}.pdf'.format(yesterday())
         filepath = os.path.join(DIRS['result'], filename)
         legend_kwargs = dict(edgecolor='white', facecolor='white', fontsize=24)
+        first = {s: first + timedelta(days=1) for s, first in
+                 self._get_day_first_occurrence(series).items()}
 
         def plot_grow_rates(pdf):
             for country in list(series.values())[0].columns:
                 fig, ax = plt.subplots(figsize=(20, 5))
-                datemin = np.datetime64(series['confirmed'][country].index[1])
-                datemax = np.datetime64(series['confirmed'][country].index[-1])
-                for status, df in series.items():
-                    data = df[country].dropna()
-                    if country != 'China':
-                        data = data.iloc[1:]
-                    if len(data) <= 1:
-                        continue
-                    plt.plot(data)
+                data = {s: series[s][country].copy() for s in STATUS_TYPES}
 
+                if any(len(data[s][first[country]:]) <= 1 for s in STATUS_TYPES):
+                    continue
+
+                for status, df in data.items():
+                    df.fillna(0, inplace=True)
+                    df = df[first[country]:]
+                    plt.plot(df)
+
+                datemin = np.datetime64(first[country])
+                datemax = np.datetime64(data['confirmed'].index[-1])
                 fig.autofmt_xdate()
                 ax.set_facecolor("white")
                 ax.set_xlim(datemin, datemax)
@@ -114,16 +119,16 @@ class Plotter:
                 log.info('Country: {} first occ at {}'.format(c, first_occs[c]))
                 fig, axs = plt.subplots(ncols=2, figsize=(40, 15))
                 for col, ax, (s, data) in zip(colors, axs, status_dict.items()):
-                    all_filtered = data[c][data[c] >= 0][first_occs[c]:]
-                    filtered = all_filtered[:all_filtered.shape[0] - 1]
+                    all_ = data[c][data[c] >= 0][first_occs[c]:]
+                    all_but_last = all_[:all_.shape[0] - 1]
                     # histogram
-                    sb.distplot(filtered, ax=ax, color=col, **dist_kwargs)
+                    sb.distplot(all_but_last, ax=ax, color=col, **dist_kwargs)
                     # distribution
                     ax2 = ax.twinx()
                     ax2.yaxis.set_ticks([])
                     try:
-                        kde_kwargs['clip'] = (0, filtered.max())
-                        sb.kdeplot(filtered, ax=ax2, color=col, **kde_kwargs)
+                        kde_kwargs['clip'] = (0, all_but_last.max())
+                        sb.kdeplot(all_but_last, ax=ax2, color=col, **kde_kwargs)
                     except KernelEstimationError as e:
                         text = '[Error: {}] on kernel estimation of {}_{}'
                         log.info(text.format(e, c, s))
@@ -132,7 +137,7 @@ class Plotter:
                         log.info(text.format(e, c, s))
 
                     # last observation
-                    last = all_filtered[all_filtered.shape[0] - 1]
+                    last = all_[all_.shape[0] - 1]
                     last_obs = plt.axvline(last, color='b', lw=10)
                     self._set_subplot_prop(ax, '{}'.format(s))
 
@@ -218,12 +223,12 @@ class Plotter:
         else:
             ax.set_xlabel('')
 
-    def _get_day_first_occurrence(self, data_):
+    def _get_day_first_occurrence(self, data):
         first_occs = {}
-        for c in list(data_.values())[0].columns:
-            data = {s: data_[s][c] for s in STATUS_TYPES}
+        for c in list(data.values())[0].columns:
             for day in range(1, len(list(data.values())[0].index)):
-                if any(data[s][day] > 0 for s in data):
-                    first_occs[c] = list(data.values())[0].index[day]
+                if any(data[s][c][day] > 0 and not np.isnan(data[s][c][day])
+                       for s in data):
+                    first_occs[c] = list(data.values())[0][c].index[day]
                     break
         return first_occs

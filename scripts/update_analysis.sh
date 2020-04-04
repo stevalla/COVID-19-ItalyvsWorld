@@ -18,4 +18,4 @@ mv "$folder"/../results/logistic_curves.png \
 
 # recompute cumulative distributions and store the new image
 echo "Run python analysis"
-python "$folder"/covid_by_ste/run_analysis.py
+python "$folder"/covid_by_ste/analysis.py

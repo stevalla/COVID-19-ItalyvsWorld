@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 
 from covid_analysis.data_handler.dataset import Dataset
-from covid_analysis.utils import DIRS, VALID_DATASETS
+from definitions import DATA_DIR, VALID_DATASETS
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ class DatasetFactory:
             name = path.split('/')[-1].split('.')[0]
             if name not in VALID_DATASETS:
                 raise ValueError('Dataset not found')
-            filepath = os.path.join(DIRS['data'], path)
+            filepath = os.path.join(DATA_DIR, path)
             datasets.append(Dataset(filepath=filepath))
             log.info('loaded data from {}'.format(filepath))
         data = self.merge_datasets(datasets)

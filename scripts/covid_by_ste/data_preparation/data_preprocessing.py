@@ -3,7 +3,7 @@ import glob
 
 import pandas as pd
 
-from covid_analysis.utils import DATA_DIR
+from definitions import DATA_DIR
 
 
 class DataPreprocessing:
@@ -29,7 +29,7 @@ class DataPreprocessing:
     def check_data(self, data):
         assert True
 
-    def integer_with_nan(self, df, col):
+    def fillnan(self, df, col):
         df[col] = df[col].fillna(-1)
         return df
 

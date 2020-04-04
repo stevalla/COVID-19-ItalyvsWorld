@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from covid_analysis.utils import STATUS_TYPES
+from definitions import STATUS_TYPES
 from covid_analysis.data_handler.dataset_factory import DatasetFactory
 
 COUNTRY = 'Country/Region'
@@ -16,39 +16,38 @@ class CovidAnalyzer:
     def data(self):
         return self._data_factory.get_data()
 
+    def grow_rates_per_country(self):
+        return self._group_by_country_rate_days('grow_rates')
+
     def histograms_per_country(self):
+        return self._group_by_country_rate_days('increment')
+
+    def _group_by_country_rate_days(self, rate_op):
         all_data = self._data_factory.get_data()
         country_grouped = all_data.groupby([COUNTRY, 'date']).sum()[STATUS_TYPES]
-
-        increments = {}
+        if rate_op == 'increment':
+            func = self._calculate_increment_per_day
+            fill_value = -1
+        else:
+            func = self._calculate_grow_rate
+            fill_value = 0
+        sorted_cols = self._sort_cols_by_confirmed(
+            country_grouped['confirmed'].unstack(COUNTRY, fill_value=fill_value)
+        )
+        rates = {}
         for s in STATUS_TYPES:
             ts = country_grouped[s].unstack(COUNTRY, fill_value=-1)
-            increments[s] = self._calculate_increment_per_day(ts)
-        increments = self._prepare_for_plotting(increments)
-        return increments
+            rates[s] = func(ts).reindex(columns=sorted_cols)
+        return rates
 
-    def _calculate_increment_per_day(self, serie):
-        increments = np.zeros(serie.shape)
-        values = serie.values
-        for day in range(1, serie.shape[0]):
+    def _calculate_increment_per_day(self, series):
+        increments = np.zeros(series.shape)
+        values = series.values
+        for day in range(1, series.shape[0]):
             increments[day] = values[day] - values[day - 1]
-        res = pd.DataFrame(increments, columns=serie.columns, index=serie.index)
+        res = pd.DataFrame(increments, columns=series.
+                           columns, index=series.index)
         return res
-
-    def grow_rate_per_country(self):
-        all_data = self._data_factory.get_data()
-        country_grouped = all_data.groupby([COUNTRY, 'date']).sum()[STATUS_TYPES]
-
-        grow_rates = {}
-        for s in STATUS_TYPES:
-            ts = country_grouped[s].unstack(COUNTRY, fill_value=0)
-            grow_rates[s] = self._calculate_grow_rate(ts)
-        sorted_cols = self._sort_cols_by_confirmed(
-            country_grouped['confirmed'].unstack(COUNTRY, fill_value=-1)
-        )
-        for s in STATUS_TYPES:
-            grow_rates[s] = grow_rates[s].reindex(columns=sorted_cols)
-        return grow_rates
 
     def _calculate_grow_rate(self, serie):
         grow_rate = np.zeros(serie.shape)
@@ -61,17 +60,8 @@ class CovidAnalyzer:
         res = pd.DataFrame(grow_rate, columns=serie.columns, index=serie.index)
         return res
 
-    def _prepare_for_plotting(self, data):
-        prepared = {}
-        sorted_cols = self._sort_cols_by_confirmed(data['confirmed'])
-        for s in STATUS_TYPES:
-            prepared[s] = data[s].reindex(columns=sorted_cols)
-        return prepared
-
     def _sort_cols_by_confirmed(self, data):
         sums = data.sum(axis=0)
         sort_indexes = np.argsort(-sums.values)
-        sorted_cols = []
-        for i in sort_indexes:
-            sorted_cols.append(data.columns[i])
+        sorted_cols = [data.columns[i] for i in sort_indexes]
         return sorted_cols

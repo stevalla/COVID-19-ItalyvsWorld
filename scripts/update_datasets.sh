@@ -27,7 +27,7 @@ for country in "${datasets[@]}"; do
 done
 
 echo "Preprocessing data"
-python -c "import data_preparation.preprocessing as pr; pr.preprocess_data()"
+python "$folder"/covid_by_ste/preprocessing.py
 
 for country in "${datasets[@]}"; do
     # Store history

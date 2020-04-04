@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from covid_analysis.utils import yesterday
-from data_preparation.data_preprocessing import DataPreprocessing, DATA_DIR
+from definitions import DATA_DIR, yesterday
+from data_preparation.data_preprocessing import DataPreprocessing
 
 
 class ItalyPreprocessing(DataPreprocessing):
@@ -29,7 +29,8 @@ class ItalyPreprocessing(DataPreprocessing):
         data.drop(['note_en', 'note_it'], inplace=True, axis=1)
         self.preprocessed = pd.concat([self.preprocessed, data])
         self._integer_with_nan()
-        self.preprocessed = self._aggregate_provinces(self.preprocessed)
+        self.preprocessed = self._fix_provinces(self.preprocessed)
+        assert all(~self.preprocessed.duplicated(keep='first')), print('Duplicates')
         self.preprocessed.to_csv('{}/cleaned/italy.csv'.format(DATA_DIR),
                                  index=False, float_format='%.5f')
 
@@ -54,7 +55,7 @@ class ItalyPreprocessing(DataPreprocessing):
         assert yest in data['data'].values
         assert all(d in data.columns for d in columns)
 
-    def _aggregate_provinces(self, data):
+    def _fix_provinces(self, data):
         trento = 'P.A. Trento'
         bolzano = 'P.A. Bolzano'
         trentino_data = data[(data['denominazione_regione'] == trento) |
@@ -75,7 +76,7 @@ class ItalyPreprocessing(DataPreprocessing):
 
     def _integer_with_nan(self):
         for col in ['deceduti', 'totale_casi']:
-            self.preprocessed = super().integer_with_nan(self.preprocessed, col)
+            self.preprocessed = super().fillnan(self.preprocessed, col)
             assert not self.preprocessed[col].isnull().values.any()
 
     def _convert_dates(self, dates):

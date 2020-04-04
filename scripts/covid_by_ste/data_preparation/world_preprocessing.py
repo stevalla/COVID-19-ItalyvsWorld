@@ -2,11 +2,8 @@ import re
 
 import pandas as pd
 
-from covid_analysis.utils import STATUS_TYPES, yesterday
-from data_preparation.data_preprocessing import DataPreprocessing, DATA_DIR
-
-
-COUNTRY = 'Country/Region'
+from definitions import DATA_DIR, STATUS_TYPES, COUNTRY, yesterday
+from data_preparation.data_preprocessing import DataPreprocessing
 
 
 class WorldPreprocessing(DataPreprocessing):
@@ -46,10 +43,27 @@ class WorldPreprocessing(DataPreprocessing):
                 new_data = pd.concat([new_data, tmp[file_type]], axis=1)
 
         self.preprocessed = pd.concat([self.preprocessed, new_data])
-        self._integer_with_nan()
+        self._fillnan()
+        assert all(~self.preprocessed.duplicated(keep='first')), print('Duplicates')
         self.preprocessed.to_csv('{}/cleaned/{}.csv'.format(DATA_DIR,
                                                             self.country),
                                  index=False, float_format='%.5f')
+
+    def make_consistent(self):
+        if self.preprocessed.empty:
+            raise ValueError("Preprocessed data empty")
+        data = self.preprocessed
+        data = data[(data[COUNTRY] != 'Italy') & (data[COUNTRY] != 'US')]
+        return data
+
+    def check_data(self, data):
+        columns = ['Province/State', COUNTRY, 'Lat', 'Long']
+        assert '1/22/20' in data.columns or '1/22/2020' in data.columns
+        yest = yesterday().timetuple()
+        yest = '{0[1]:}/{0[2]:}/{0[0]}'.format(yest)
+        # assert yest in data.columns or yest[:-2] in data.columns, \
+        #     print(yest, data.columns[-1])
+        assert all(d in data.columns for d in columns)
 
     def _load_series(self, data, time_series, file_type):
         new_data = pd.DataFrame()
@@ -66,24 +80,7 @@ class WorldPreprocessing(DataPreprocessing):
             new_data = pd.concat([new_data, tmp])
         return new_data
 
-    def make_consistent(self):
-        if self.preprocessed.empty:
-            raise ValueError("Preprocessed data empty")
-        data = self.preprocessed
-        data = data[(data[COUNTRY] != 'Italy') |
-                    (data[COUNTRY] != 'US')]
-        return data
-
-    def check_data(self, data):
-        columns = ['Province/State', COUNTRY, 'Lat', 'Long']
-        assert '1/22/20' in data.columns or '1/22/2020' in data.columns
-        yest = yesterday().timetuple()
-        yest = '{0[1]:}/{0[2]:}/{0[0]}'.format(yest)
-        assert yest in data.columns or yest[:-2] in data.columns, \
-            print(yest, data.columns[-1])
-        assert all(d in data.columns for d in columns)
-
-    def _integer_with_nan(self):
+    def _fillnan(self):
         for col in STATUS_TYPES:
-            self.preprocessed = super().integer_with_nan(self.preprocessed, col)
+            self.preprocessed = super().fillnan(self.preprocessed, col)
             assert not self.preprocessed[col].isnull().values.any()

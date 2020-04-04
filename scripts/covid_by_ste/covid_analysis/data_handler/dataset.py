@@ -3,7 +3,7 @@ import logging
 
 import pandas as pd
 
-from covid_analysis.utils import STATUS_TYPES
+from definitions import STATUS_TYPES
 
 log = logging.getLogger(__name__)
 

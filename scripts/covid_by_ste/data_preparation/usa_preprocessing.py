@@ -2,7 +2,7 @@ import re
 
 import pandas as pd
 
-from covid_analysis.utils import COLUMNS_ANALYSIS
+from definitions import COLUMNS_ANALYSIS, STATE
 from data_preparation.world_preprocessing import WorldPreprocessing, COUNTRY
 
 
@@ -17,7 +17,7 @@ class UsaPreprocessing(WorldPreprocessing):
     def reshape_data(self):
         for csv in self.files:
             data = pd.read_csv(csv)
-            data.rename(columns={'Province_State': 'Province/State',
+            data.rename(columns={'Province_State': STATE,
                                  'Country_Region': COUNTRY},
                         inplace=True)
             if 'Long_' in data.columns:
@@ -28,7 +28,9 @@ class UsaPreprocessing(WorldPreprocessing):
     def make_consistent(self):
         if self.preprocessed.empty:
             raise ValueError("Preprocessed data empty")
-        data = self.preprocessed
+        data = self.preprocessed.copy()
+        data.drop(STATE, inplace=True, axis=1)
+        data.rename(columns={'Combined_Key': STATE}, inplace=True)
         drop_cols = [c for c in data.columns if c not in COLUMNS_ANALYSIS]
         data.drop(drop_cols, inplace=True, axis=1)
         return data
