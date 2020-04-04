@@ -1,5 +1,4 @@
 import logging
-
 import data_preparation
 
 import numpy as np
@@ -98,4 +97,5 @@ def check_consistency(data):
 
 
 if __name__ == '__main__':
+    log.info('{0:} Starting data update {0:}'.format('='*80))
     preprocess_data()

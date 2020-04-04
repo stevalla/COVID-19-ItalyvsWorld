@@ -2,10 +2,8 @@ import numpy as np
 import pandas as pd
 
 from datetime import timedelta
-from definitions import STATUS_TYPES
+from definitions import STATUS_TYPES, COUNTRY
 from covid_analysis.data_handler.dataset_factory import DatasetFactory
-
-COUNTRY = 'Country/Region'
 
 
 class CovidAnalyzer:

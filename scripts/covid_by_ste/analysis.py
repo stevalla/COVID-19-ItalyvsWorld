@@ -7,8 +7,6 @@ from covid_analysis.regressor import Regressor
 
 log = logging.getLogger(__name__)
 
-sep = '='*50
-
 
 def run():
     analyzer = CovidAnalyzer([DATA])
