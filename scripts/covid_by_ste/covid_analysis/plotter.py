@@ -103,7 +103,7 @@ class Plotter:
         points is low reduces noise due to sampling randomness. We
         decide to use the doane method """
         countries = list(status_dict.values())[0].columns
-        filename = '{}/histograms/{}.pdf'.format(DIRS['result'], yesterday())
+        filename = '{}/histograms/histograms_{}.pdf'.format(DIRS['result'], yesterday())
         colors = ['c', 'r', 'g']
         dist_kwargs = dict(kde=False, bins='doane', norm_hist=False,
                            hist_kws=dict(edgecolor='black', lw=2))
@@ -187,7 +187,7 @@ class Plotter:
         self._merge_pdf(fig, 'world_swabs_vs_confirmed.pdf')
 
     def increments_in_time(self, increments, mas):
-        filename = 'moving_avg/{}.pdf'.format(yesterday())
+        filename = 'moving_avg/5ma_{}.pdf'.format(yesterday())
         filepath = os.path.join(DIRS['result'], filename)
         legend_text = ['Actual data', '5 days moving average']
         legend_kwargs = dict(edgecolor='white', facecolor='white')

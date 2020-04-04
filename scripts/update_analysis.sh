@@ -14,7 +14,7 @@ export PYTHONPATH="$folder"/covid_by_ste
 
 # store old logistic curve
 mv "$folder"/../results/logistic_curves.png \
-    "$folder"/../results/logistic_curves/"$yesterday".png
+    "$folder"/../results/logistic_curves/logistic_curve_"$yesterday".png
 
 # recompute cumulative distributions and store the new image
 echo "Run python analysis"
