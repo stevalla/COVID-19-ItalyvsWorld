@@ -37,7 +37,8 @@ class Plotter:
                 fig, ax = plt.subplots(figsize=(20, 5))
                 data = {s: series[s][country].copy() for s in STATUS_TYPES}
 
-                if any(len(data[s][first[country]:]) <= 1 for s in STATUS_TYPES):
+                if country not in first or any(len(data[s][first[country]:])
+                                               <= 1 for s in STATUS_TYPES):
                     continue
 
                 for status, df in data.items():
@@ -194,6 +195,8 @@ class Plotter:
 
         def plot_increments_in_time(pdf):
             for country in list(increments.values())[0].columns:
+                if country not in first:
+                    continue
                 fig, axs = plt.subplots(nrows=2, figsize=(20, 16))
                 for ax, s in zip(axs, STATUS_TYPES):
                     inc = increments[s][country][first[country]:]
