@@ -21,9 +21,10 @@ class CovidAnalyzer:
     def histograms_per_country(self):
         return self._group_by_country_rate_days('increment')
 
-    def increments_in_time(self, ma_days=5):
+    def increments_in_time(self):
         increments = self._group_by_country_rate_days('increment')
-        mas = self._moving_average(increments, ma_days)
+        mas = {'short': self._moving_average(increments, 5, 'exp'),
+               'long': self._moving_average(increments, 10, 'exp')}
         return increments, mas
 
     def _group_by_country_rate_days(self, rate_op):
@@ -44,17 +45,17 @@ class CovidAnalyzer:
             rates[s] = func(ts).reindex(columns=sorted_cols)
         return rates
 
-    def _moving_average(self, data, days=5):
+    def _moving_average(self, data, days, ma_type='simple'):
         """ Compute the moving average. The data is expected to be a
         dictionary of status types and data frames having dates
         as index. It performs the average by columns. """
-        mas = {}
-        for s in STATUS_TYPES:
-            dates = data[s].index[days:]
-            mas[s] = pd.DataFrame(columns=data[s].columns, index=dates)
-            for end in dates:
-                start = end - timedelta(days=days)
-                mas[s].loc[end] = np.mean(data[s][start:end].values, axis=0)
+        if ma_type == 'simple':
+            mas = {s: data[s].rolling(window=days).mean() for s in STATUS_TYPES}
+        elif ma_type == 'exp':
+            mas = {s: data[s].ewm(span=days, adjust=False).mean()
+                   for s in STATUS_TYPES}
+        else:
+            raise ValueError('Type of moving average not recognized')
         return mas
 
     def _calculate_increment_per_day(self, series):

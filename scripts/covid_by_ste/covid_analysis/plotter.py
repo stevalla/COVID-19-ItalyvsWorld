@@ -189,8 +189,12 @@ class Plotter:
     def increments_in_time(self, increments, mas):
         filename = 'moving_avg/5ma_{}.pdf'.format(yesterday())
         filepath = os.path.join(DIRS['result'], filename)
-        legend_text = ['Actual data', '5 days moving average']
+        legend_text = ['5-days exponential moving average',
+                       '10-days exponential moving average',
+                       'Actual data']
         legend_kwargs = dict(edgecolor='white', facecolor='white')
+        markers = ['o', 's']
+        colors = ['b', 'r']
         first = self._get_day_first_occurrence(increments)
 
         def plot_increments_in_time(pdf):
@@ -200,9 +204,12 @@ class Plotter:
                 fig, axs = plt.subplots(nrows=2, figsize=(20, 16))
                 for ax, s in zip(axs, STATUS_TYPES):
                     inc = increments[s][country][first[country]:]
-                    ma = mas[s][country][first[country]:]
+
                     ax.bar(inc.index, inc, color='c')
-                    ax.plot(ma.index, ma, linewidth=3, color='b')
+                    for ma_, color, marker in zip(mas, colors, markers):
+                        ma = mas[ma_][s][country][first[country]:]
+                        ax.plot(ma.index, ma, lw=2, color=color, marker=marker,
+                                ms=10)
 
                     ax.set_facecolor("white")
                     ax.set_ylabel('Daily increment', fontsize=24)
