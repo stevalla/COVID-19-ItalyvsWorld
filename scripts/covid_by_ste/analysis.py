@@ -12,9 +12,9 @@ def run():
     analyzer = CovidAnalyzer([DATA])
     plotter = Plotter(analyzer.data)
 
-    # log.info('>>> Logistic curve at {}'.format(yesterday()))
-    # plotter.plot_logistic_curve(analyzer.data)
-    #
+    log.info('>>> Logistic curve at {}'.format(yesterday()))
+    plotter.plot_logistic_curve(analyzer.data)
+
     # log.info('>>> Generating grow rates...')
     # grow_rates = analyzer.grow_rates_per_country()
     # plotter.plot_grow_rate_per_country(grow_rates)
@@ -35,9 +35,9 @@ def run():
     # log.info("Plotting Italy confirmed trend over the number of daily swabs")
     # plotter.scatter_swabs(data, rgr.predict(data['tamponi']))
 
-    log.info(">>> Update world map")
-    data = analyzer.world_map()
-    plotter.plot_map(data)
+    # log.info(">>> Update world map")
+    # data = analyzer.world_map()
+    # plotter.plot_map(data)
 
 
 if __name__ == '__main__':

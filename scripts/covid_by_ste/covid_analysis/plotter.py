@@ -72,7 +72,7 @@ class Plotter:
     def plot_logistic_curve(self, data):
         filename = '{}/logistic_curves.png'.format(DIRS['result'])
         legend_kwargs = dict(bbox_to_anchor=(.5, 1), edgecolor='white',
-                             loc='lower center', ncol=3, fontsize=22,
+                             loc='lower center', ncol=3, fontsize=28,
                              columnspacing=6, handlelength=5, facecolor='white')
         colors = ['c', 'r']
         lines = []
@@ -87,7 +87,8 @@ class Plotter:
                               label=s, lw=5)
             tmp.fill_between(grouped[s].index, grouped[s], 0,
                              color=colors[i], alpha=0.3)
-            tmp.set_ylabel(s, fontsize=22)
+            tmp.set_ylabel(s, fontsize=32)
+            tmp.tick_params(axis="y", labelsize=28)
 
         fig.autofmt_xdate()
         leg = ax.legend(lines, [line.get_label() for line in lines], **legend_kwargs)
@@ -97,9 +98,8 @@ class Plotter:
         ax.set_xlabel('Cumulative distributions', fontsize=32)
         ax.xaxis.set_label_coords(0.5, -0.22)
         ax.set_facecolor("white")
+        ax.tick_params(axis="x", labelsize=28)
         plt.grid(True, color="grey", linestyle='--', lw=0.2)
-        plt.xticks(fontsize=22)
-        plt.yticks(fontsize=22)
         plt.savefig(filename)
         plt.close(fig)
 
