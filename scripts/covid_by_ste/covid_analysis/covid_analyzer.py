@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from datetime import timedelta
-from definitions import STATUS_TYPES, COUNTRY
+from definitions import STATUS_TYPES, COUNTRY, STATE, yesterday
 from covid_analysis.data_handler.dataset_factory import DatasetFactory
 
 
@@ -26,6 +26,23 @@ class CovidAnalyzer:
         mas = {'short': self._moving_average(increments, 5, 'exp'),
                'long': self._moving_average(increments, 10, 'exp')}
         return increments, mas
+
+    def world_map(self):
+        data = self._data_factory.get_data()
+        data = data[data['date'] == yesterday() - timedelta(days=1)]
+        cols = ['Long', 'Lat', 'date', 'confirmed', 'iso3', STATE, COUNTRY]
+        data = data[cols]
+        data['country'] = self._world_map_country_names(data)
+        return data
+
+    def _world_map_country_names(self, data):
+        countries = []
+        for i in data.index:
+            name = data.loc[i, COUNTRY]
+            if not data.loc[i, STATE] is np.nan:
+                name += ' {}'.format(data.loc[i, STATE])
+            countries.append(name)
+        return countries
 
     def _group_by_country_rate_days(self, rate_op):
         all_data = self._data_factory.get_data()

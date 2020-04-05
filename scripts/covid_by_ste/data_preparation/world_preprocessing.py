@@ -1,10 +1,14 @@
 import re
+import logging
 
+import numpy as np
 import pandas as pd
 
-from definitions import DATA_DIR, STATUS_TYPES, COUNTRY, yesterday
+from definitions import DATA_DIR, STATUS_TYPES, COUNTRY, COLUMNS_ANALYSIS
+from definitions import yesterday, STATE
 from data_preparation.data_preprocessing import DataPreprocessing
 
+log = logging.getLogger(__name__)
 
 class WorldPreprocessing(DataPreprocessing):
 
@@ -52,18 +56,41 @@ class WorldPreprocessing(DataPreprocessing):
     def make_consistent(self):
         if self.preprocessed.empty:
             raise ValueError("Preprocessed data empty")
-        data = self.preprocessed
+
+        data = self.preprocessed.copy()
         data = data[(data[COUNTRY] != 'Italy') & (data[COUNTRY] != 'US')]
+        data['iso3'] = self._add_isos(data)
+        data = data.reindex(columns=COLUMNS_ANALYSIS)
         return data
 
     def check_data(self, data):
-        columns = ['Province/State', COUNTRY, 'Lat', 'Long']
+        columns = [STATE, COUNTRY, 'Lat', 'Long']
         assert '1/22/20' in data.columns or '1/22/2020' in data.columns
         yest = yesterday().timetuple()
         yest = '{0[1]:}/{0[2]:}/{0[0]}'.format(yest)
         assert yest in data.columns or yest[:-2] in data.columns, \
             print(yest, data.columns[-1])
         assert all(d in data.columns for d in columns)
+
+    def _add_isos(self, data):
+        url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/' \
+              'master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
+        iso_table = pd.read_csv(url)
+        isos, misses = [], []
+        for i in data.index:
+            iso_mask = (iso_table['Country_Region'] == data.loc[i, COUNTRY])
+            if not data.loc[i, STATE] is np.nan:
+                iso_mask &= (iso_table['Province_State'] == data.loc[i, STATE])
+            try:
+                isos.append(iso_table[iso_mask]['iso3'].values[0])
+            except IndexError:
+                miss = '{} - {}'.format(data.loc[i, COUNTRY], data.loc[i, STATE])
+                if not any(miss == m for m in misses):
+                    misses.append(miss)
+                isos.append('NOT PRESENT')
+        if misses:
+            log.info('not present iso3 are {}'.format(misses))
+        return isos
 
     def _load_series(self, data, time_series, file_type):
         new_data = pd.DataFrame()
@@ -74,7 +101,7 @@ class WorldPreprocessing(DataPreprocessing):
 
             # check all region are ordered the same
             if not new_data.empty:
-                for col in ['Province/State', COUNTRY]:
+                for col in [STATE, COUNTRY]:
                     assert all([r1 == r2 or all(pd.isna([r1, r2]))
                                 for r1, r2 in zip(new_data[col], tmp[col])])
             new_data = pd.concat([new_data, tmp])

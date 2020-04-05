@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from definitions import DATA_DIR, yesterday
+from definitions import DATA_DIR, COLUMNS_ANALYSIS, yesterday
 from data_preparation.data_preprocessing import DataPreprocessing
 
 
@@ -37,14 +37,15 @@ class ItalyPreprocessing(DataPreprocessing):
     def make_consistent(self):
         if self.preprocessed.empty:
             raise ValueError("Preprocessed data empty")
-        mapping = {'Province/State': 'denominazione_regione',
-                   'Lat': 'lat', 'Long': 'long',
-                   'deaths': 'deceduti',
+        mapping = {'Province/State': 'denominazione_regione', 'iso3': 'stato',
+                   'Lat': 'lat', 'Long': 'long', 'deaths': 'deceduti',
                    'confirmed': 'totale_casi'}
-        data = pd.DataFrame({c: self.preprocessed[k] for c, k in mapping.items()})
-        data.insert(loc=1, column='Country/Region', value='Italy')
+        data_ = self.preprocessed.copy()
+        data = pd.DataFrame({c: data_[k] for c, k in mapping.items()})
+        data['Country/Region'] = 'Italy'
         dates = self.preprocessed['data']
-        data.insert(loc=4, column='date', value=dates)
+        data['date'] = dates
+        data = data.reindex(columns=COLUMNS_ANALYSIS)
         return data
 
     def check_data(self, data):

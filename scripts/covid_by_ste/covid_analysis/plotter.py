@@ -1,15 +1,19 @@
 import os
 import logging
 import warnings
+import cufflinks
 
 import numpy as np
 import seaborn as sb
+import plotly.graph_objs as go
+import plotly.express as px
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 from cycler import cycler
 from datetime import timedelta
 from PyPDF2 import PdfFileReader, PdfFileWriter
+from mpl_toolkits.basemap import Basemap
 from matplotlib.ticker import FixedLocator
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -18,6 +22,7 @@ from definitions import DIRS, STATUS_TYPES, yesterday, KernelEstimationError
 
 log = logging.getLogger(__name__)
 warnings.simplefilter("error", (RuntimeWarning, UserWarning))
+cufflinks.go_offline(connected=True)
 
 
 class Plotter:
@@ -225,6 +230,51 @@ class Plotter:
                 plt.close(fig)
 
         wrapper_store_pdf(plot_increments_in_time, filepath)
+
+    def plot_map(self, data_):
+        data = data_.groupby('iso3').sum()
+        sizes = np.log(data_['confirmed'].replace(0, 1)) / np.log(1.5)
+        colors = np.log(data['confirmed'].replace(0, 1)) / np.log(1.3)
+
+        fig = go.Figure(data=[
+            go.Choropleth(
+                z=colors,
+                locations=data.index.values,
+                locationmode='ISO-3',
+                colorscale='Sunsetdark',
+                hoverinfo='none',
+                colorbar=dict(
+                    title='Log1.35 of confirmed cases per country',
+                    titleside='top',
+                    tickmode='array',
+                    ticks="outside",
+                    dtick=0.1
+                ),
+                marker=dict(line=dict(color='rgb(250,250,200)', width=0.5))
+            ),
+            go.Scattergeo(
+                lon=data_['Long'],
+                lat=data_['Lat'],
+                text=data_['country'],
+                mode='markers',
+                showlegend=False,
+                marker=dict(size=sizes, opacity=0.3, color='cyan')
+            )
+        ])
+        fig.update_geos(
+            projection_type="orthographic",
+            oceancolor="MidNightBlue",
+            countrycolor="white",
+            coastlinecolor="white",
+            showocean=True,
+            showcoastlines=True,
+            showcountries=True,
+            showland=True,
+            showlakes=True,
+        )
+        fig.update_layout(width=1620, height=741, autosize=True,
+                          hovermode="closest")
+        fig.write_html(os.path.join(DIRS['result'], 'world_map.html'))
 
     def _merge_pdf(self, fig, final_path):
         tmp_path = os.path.join(DIRS['result'], 'tmp.pdf')

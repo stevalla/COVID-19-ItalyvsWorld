@@ -14,12 +14,13 @@ DIRS = {'root': ROOT_DIR, 'result': RESULT_DIR,
 # DATA PATH
 DATA = 'cleaned/total.csv'
 ITALY_DATA = 'cleaned/italy.csv'
+USA_DATA = 'cleaned/usa.csv'
 
 # CONSTANTS
 VALID_DATASETS = ['italy', 'world', 'usa', 'total']
 STATUS_TYPES = ['confirmed', 'deaths']
-COLUMNS_ANALYSIS = ['Province/State', 'Country/Region', 'Lat', 'Long', 'date'] \
-                   + STATUS_TYPES
+COLUMNS_ANALYSIS = ['Province/State', 'Country/Region', 'Lat', 'Long', 'date',
+                    'iso3'] + STATUS_TYPES
 COUNTRY = 'Country/Region'
 STATE = 'Province/State'
 

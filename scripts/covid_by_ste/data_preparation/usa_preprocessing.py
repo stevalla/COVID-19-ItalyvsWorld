@@ -33,4 +33,5 @@ class UsaPreprocessing(WorldPreprocessing):
         data.rename(columns={'Combined_Key': STATE}, inplace=True)
         drop_cols = [c for c in data.columns if c not in COLUMNS_ANALYSIS]
         data.drop(drop_cols, inplace=True, axis=1)
+        data = data.reindex(columns=COLUMNS_ANALYSIS)
         return data

@@ -1,11 +1,12 @@
 import logging
+
 import data_preparation
 
 import numpy as np
 import pandas as pd
 
 from datetime import datetime, timedelta
-from definitions import yesterday
+from definitions import yesterday, COLUMNS_ANALYSIS
 from definitions import ROOT_DIR, STATUS_TYPES, VALID_DATASETS, COUNTRY
 
 
@@ -26,10 +27,12 @@ def preprocess_data():
     all_data = []
     dates_per_dataset = {}
     for csv in datasets:
+        log.info('Preprocessing {}'.format(csv))
         preprocesser = getattr(data_preparation, '{}Preprocessing'
                                .format(csv.capitalize()))(csv)
         preprocesser.reshape_data()
         data = preprocesser.make_consistent()
+        assert all(c in data.columns for c in COLUMNS_ANALYSIS)
         dates_per_dataset[csv] = [date for date in data['date'].unique()
                                   if date not in total_dates]
         all_data.append(data)
