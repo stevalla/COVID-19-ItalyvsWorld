@@ -77,6 +77,7 @@ class WorldPreprocessing(DataPreprocessing):
               'master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
         iso_table = pd.read_csv(url)
         isos, misses = [], []
+        data = data.reset_index()
         for i in data.index:
             iso_mask = (iso_table['Country_Region'] == data.loc[i, COUNTRY])
             if not data.loc[i, STATE] is np.nan:

@@ -30,19 +30,9 @@ class CovidAnalyzer:
     def world_map(self):
         data = self._data_factory.get_data()
         data = data[data['date'] == yesterday() - timedelta(days=1)]
-        cols = ['Long', 'Lat', 'date', 'confirmed', 'iso3', STATE, COUNTRY]
+        cols = ['Long', 'Lat', 'date', 'iso3', STATE, COUNTRY] + STATUS_TYPES
         data = data[cols]
-        data['country'] = self._world_map_country_names(data)
         return data
-
-    def _world_map_country_names(self, data):
-        countries = []
-        for i in data.index:
-            name = data.loc[i, COUNTRY]
-            if not data.loc[i, STATE] is np.nan:
-                name += ' {}'.format(data.loc[i, STATE])
-            countries.append(name)
-        return countries
 
     def _group_by_country_rate_days(self, rate_op):
         all_data = self._data_factory.get_data()
