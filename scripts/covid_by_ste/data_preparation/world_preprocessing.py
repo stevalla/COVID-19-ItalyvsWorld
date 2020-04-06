@@ -10,6 +10,7 @@ from data_preparation.data_preprocessing import DataPreprocessing
 
 log = logging.getLogger(__name__)
 
+
 class WorldPreprocessing(DataPreprocessing):
 
     def __init__(self, country):
@@ -56,7 +57,6 @@ class WorldPreprocessing(DataPreprocessing):
     def make_consistent(self):
         if self.preprocessed.empty:
             raise ValueError("Preprocessed data empty")
-
         data = self.preprocessed.copy()
         data = data[(data[COUNTRY] != 'Italy') & (data[COUNTRY] != 'US')]
         data['iso3'] = self._add_isos(data)
@@ -77,7 +77,7 @@ class WorldPreprocessing(DataPreprocessing):
               'master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
         iso_table = pd.read_csv(url)
         isos, misses = [], []
-        data = data.reset_index()
+        data = data.copy().reset_index()
         for i in data.index:
             iso_mask = (iso_table['Country_Region'] == data.loc[i, COUNTRY])
             if not data.loc[i, STATE] is np.nan:

@@ -5,6 +5,7 @@ import data_preparation
 import numpy as np
 import pandas as pd
 
+from IPython.display import display
 from datetime import datetime, timedelta
 from definitions import yesterday, COLUMNS_ANALYSIS
 from definitions import ROOT_DIR, STATUS_TYPES, VALID_DATASETS, COUNTRY
@@ -51,13 +52,13 @@ def preprocess_data():
     for data in all_data:
         assert data.shape[1] == total.shape[1]
     # assert number of rows equal to the sum of all csvs
-    [print(d.shape[0]) for d in all_data]
-    print(total.shape[0])
     try:
         assert sum([d.shape[0] for d in all_data]) == total.shape[0]
     except AssertionError:
         log.info('The total size seems to be not correct, check the dates of ' 
                  'the csvs, Italy may has one date more.')
+        log.info('Shapes: italy {}, world {}, usa {}, total {}'
+                 .format(*[d.shape[0] for d in all_data], total.shape[0]))
 
     for c in STATUS_TYPES:
         total[c] = total[c].fillna(-1)
@@ -78,6 +79,7 @@ def check_consistency(data):
     old_date = '{0[1]:}/{0[2]:}/{0[0]}'.format(old.timetuple())
     data_old = data[data['date'] == old_date[:-2]]
     data_new = data[data['date'] == new_date[:-2]]
+    cols = [COUNTRY, 'Province/State', 'date']
 
     try:
         assert set(data_old[COUNTRY].values) <= set(data_new[COUNTRY].values)
@@ -98,6 +100,21 @@ def check_consistency(data):
             )][COUNTRY].unique()
             log.info("Inconsistency in the time series {} for countries {}"
                      .format(s, countries))
+            d_old = data[data.index.isin(data_old[s].index)].reset_index(drop=True)
+            d_new = data[data.index.isin(data_new[s].index)].reset_index(drop=True)
+            for c in countries:
+                if d_old.empty:
+                    log.info('Country {} first observation today'.format(c))
+                else:
+                    old = d_old[d_old[COUNTRY] == c][s]
+                    new = d_new[d_new[COUNTRY] == c][s]
+                    wrong = old > new
+                    df = d_old[d_old[COUNTRY] == c][wrong][cols]
+                    df[s] = old[wrong]
+                    df['date_new'] = d_new[d_new[COUNTRY] == c][wrong]['date']
+                    df['{}_new'.format(s)] = new[wrong]
+                    log.info('Country {} wrong values are'.format(c))
+                    display(df)
     return check
 
 

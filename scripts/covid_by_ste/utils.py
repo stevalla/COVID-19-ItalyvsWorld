@@ -3,6 +3,8 @@ import warnings
 import logging.config
 import matplotlib.style
 
+import pandas as pd
+
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from matplotlib.backends.backend_pdf import PdfPages
 from definitions import SCRIPTS_DIR, DIRS, yesterday
@@ -16,6 +18,10 @@ logging.captureWarnings(True)
 
 # PLOT STYLE
 matplotlib.style.use('ggplot')
+
+# PANDAS OPTIONS
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
 
 
 # WRAPPER FOR STORING IMAGES ON PDF
