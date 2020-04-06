@@ -34,10 +34,10 @@ for country in "${datasets[@]}"; do
     for file in "$folder"/../data/"$country"/*.csv; do
         filename=$(basename -- "$file")
         f="${filename%.*}"
-#        mv "$file" "$folder"/../data/history/"$country"/"$f"_"$yesterday".csv
+        mv "$file" "$folder"/../data/history/"$country"/"$f"_"$yesterday".csv
     done
 
     # Cleaning
-#    rm -r "$folder"/${country}_data
-#    rm -r "$folder"/../data/"$country"
+    rm -r "$folder"/${country}_data
+    rm -r "$folder"/../data/"$country"
 done
