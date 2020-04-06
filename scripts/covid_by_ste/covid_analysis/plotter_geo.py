@@ -100,7 +100,7 @@ class PlotterGeo:
             transition=dict(duration=0.5)
         )
         fig.update_yaxes(automargin=True)
-        fig.write_html(os.path.join(DIRS['result'], 'world_map.html'))
+        fig.write_html(os.path.join(DIRS['result'], 'geo/world_map.html'))
         fig.write_image(os.path.join(DIRS['result'], 'tmp.pdf'))
         merge_pdf('world_map_3d.pdf')
         os.rename(os.path.join(DIRS['result'], 'world_map_3d.pdf'),

@@ -1,6 +1,6 @@
 import logging
 
-from definitions import yesterday, DATA, ITALY_DATA, USA_DATA
+from definitions import yesterday, DATA, ITALY_DATA
 from covid_analysis.plotter import Plotter
 from covid_analysis.plotter_geo import PlotterGeo
 from covid_analysis.covid_analyzer import CovidAnalyzer
