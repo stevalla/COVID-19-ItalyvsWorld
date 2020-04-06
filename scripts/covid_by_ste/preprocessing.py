@@ -51,6 +51,8 @@ def preprocess_data():
     for data in all_data:
         assert data.shape[1] == total.shape[1]
     # assert number of rows equal to the sum of all csvs
+    [print(d.shape[0]) for d in all_data]
+    print(total.shape[0])
     try:
         assert sum([d.shape[0] for d in all_data]) == total.shape[0]
     except AssertionError:
