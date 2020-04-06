@@ -1,12 +1,14 @@
 import os
+import logging
 
 import numpy as np
 import plotly.graph_objs as go
+import chart_studio.plotly as py
 
-from PyPDF2 import PdfFileReader, PdfFileWriter
 from utils import merge_pdf
 from definitions import COUNTRY, STATE, DIRS, STATUS_TYPES, yesterday
 
+log = logging.getLogger(__name__)
 
 class PlotterGeo:
 
@@ -105,6 +107,9 @@ class PlotterGeo:
         merge_pdf('world_map_3d.pdf')
         os.rename(os.path.join(DIRS['result'], 'world_map_3d.pdf'),
                   os.path.join(DIRS['result'], 'geo/world_map_3d.pdf'))
+        url = py.plot(fig, filename='privacy-public', sharing='public',
+                      auto_open=False)
+        log.info('World map at ', url)
 
     def _world_map_country_names(self, data):
         countries = []
@@ -114,4 +119,3 @@ class PlotterGeo:
                 name += ' {}'.format(data.loc[i, STATE])
             countries.append(name)
         return countries
-

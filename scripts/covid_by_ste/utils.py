@@ -1,5 +1,6 @@
 import os
 import warnings
+import chart_studio
 import logging.config
 import matplotlib.style
 
@@ -22,6 +23,10 @@ matplotlib.style.use('ggplot')
 # PANDAS OPTIONS
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
+
+# PLOTlY CREDENTIALS
+chart_studio.tools.set_credentials_file(username='stev94',
+                                        api_key='GDrUj4Joe1xYEROBE0P3')
 
 
 # WRAPPER FOR STORING IMAGES ON PDF
