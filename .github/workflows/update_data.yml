@@ -18,7 +18,9 @@ jobs:
     - name: Install Ubuntu dependencies
       run: |
         sudo apt-get install libgeos-dev libgtk2.0-0 libgconf-2-4 npm
-        sudo npm install -g electron@6.1.4 orca
+
+    - name: Install orca
+      run: sudo npm install -g electron@6.1.4 orca
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
