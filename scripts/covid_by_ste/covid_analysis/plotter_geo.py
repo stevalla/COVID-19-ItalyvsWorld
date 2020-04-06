@@ -1,10 +1,11 @@
 import os
-import plotly
 
 import numpy as np
 import plotly.graph_objs as go
 
-from definitions import COUNTRY, STATE, DIRS, STATUS_TYPES
+from PyPDF2 import PdfFileReader, PdfFileWriter
+from utils import merge_pdf
+from definitions import COUNTRY, STATE, DIRS, STATUS_TYPES, yesterday
 
 
 class PlotterGeo:
@@ -21,17 +22,22 @@ class PlotterGeo:
         annotations_t = {"y": 0.99,  "font": {"size": 30}, "xref": "paper",
                          "yref": "paper", "xanchor": "center",
                          "yanchor": "bottom", "showarrow": False}
+        footnote = {"x": 1.1, 'y': -0.12, "font": {"size": 18},
+                    "xref": "paper", "yref": "paper", "xanchor": "right",
+                    "yanchor": "bottom", "showarrow": False,
+                    "text": "Last update at {}".format(yesterday())}
 
         layout = {}
         plots = []
-        annotations = []
+        frames = []
+        annotations = [footnote]
         for i, status in enumerate(STATUS_TYPES):
             sizes = np.log(data_[status].replace(0, 1)) / np.log(1.5)
             colors = np.log(data[status].replace(0, 1)) / np.log(1.3)
             geo = 'geo{}'.format(str(i+1) if i > 0 else '')
             annotations.append(annotations_t.copy())
-            annotations[i]['x'] = subtitle_pos[i]
-            annotations[i]['text'] = status.capitalize()
+            annotations[i + 1]['x'] = subtitle_pos[i]
+            annotations[i + 1]['text'] = status.capitalize()
             plots.append(dict(
                 type='choropleth',
                 z=colors,
@@ -65,26 +71,40 @@ class PlotterGeo:
                 oceancolor="MidNightBlue",
                 countrycolor="white",
                 coastlinecolor="white",
+                projection_rotation_lon=0,
                 showocean=True,
                 showcoastlines=True,
                 showcountries=True,
                 showland=True,
                 domain=domains[i],
-                showlakes=True,
+                showlakes=True
             )
-        fig = go.Figure(data=plots, layout=layout)
+        lon_range = list(np.arange(0, 180, 3)) + list(np.arange(-180, 0, 3))
+        for lon in lon_range:
+            frames.append(dict(
+                layout=dict(geo=dict(center_lon=lon,
+                                     projection_rotation_lon=lon),
+                            geo2=dict(center_lon=lon,
+                                      projection_rotation_lon=lon)))
+            )
+        fig = go.Figure(data=plots, layout=layout, frames=frames)
         fig.update_layout(
             autosize=True,
             hovermode="closest",
             title=dict(
-                text='<b>COVID spread in the world',
+                text='<b>COVID SPREAD',
                 y=0.99, x=0.5, xanchor='center', yanchor='top'
             ),
             font=dict(size=35),
             annotations=annotations,
+            transition=dict(duration=0.5)
         )
         fig.update_yaxes(automargin=True)
         fig.write_html(os.path.join(DIRS['result'], 'world_map.html'))
+        fig.write_image(os.path.join(DIRS['result'], 'tmp.pdf'))
+        merge_pdf('world_map_3d.pdf')
+        os.rename(os.path.join(DIRS['result'], 'world_map_3d.pdf'),
+                  os.path.join(DIRS['result'], 'geo/world_map_3d.pdf'))
 
     def _world_map_country_names(self, data):
         countries = []

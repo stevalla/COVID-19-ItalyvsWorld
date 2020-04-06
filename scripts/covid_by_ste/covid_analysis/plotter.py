@@ -11,11 +11,10 @@ import matplotlib.dates as mdates
 
 from cycler import cycler
 from datetime import timedelta
-from PyPDF2 import PdfFileReader, PdfFileWriter
 from matplotlib.ticker import FixedLocator
 from matplotlib.backends.backend_pdf import PdfPages
 
-from utils import wrapper_store_pdf
+from utils import wrapper_store_pdf, merge_pdf
 from definitions import DIRS, STATUS_TYPES, yesterday, KernelEstimationError
 
 log = logging.getLogger(__name__)
@@ -177,7 +176,10 @@ class Plotter:
         ax.set_xlabel('Swabs')
         ax.set_ylabel('Confirmed')
         ax.grid(True, color="grey", linestyle='--', lw=.02)
-        self._merge_pdf(fig, 'italy_swabs_vs_confirmed.pdf')
+        pdf = PdfPages(os.path.join(DIRS['result'], 'tmp.pdf'))
+        pdf.savefig(fig)
+        pdf.close()
+        merge_pdf('italy_swabs_vs_confirmed.pdf')
 
     def scatter_swabs_world(self, xs, ys, ys_pred):
         fig, ax = plt.subplots(figsize=(15, 8))
@@ -187,7 +189,10 @@ class Plotter:
                   fontsize=30)
         plt.xlabel('Swabs')
         plt.ylabel('Confirmed')
-        self._merge_pdf(fig, 'world_swabs_vs_confirmed.pdf')
+        pdf = PdfPages(os.path.join(DIRS['result'], 'tmp.pdf'))
+        pdf.savefig(fig)
+        pdf.close()
+        merge_pdf('world_swabs_vs_confirmed.pdf')
 
     def increments_in_time(self, increments, mas):
         filename = 'moving_avg/5ma_{}.pdf'.format(yesterday())
@@ -228,32 +233,6 @@ class Plotter:
                 plt.close(fig)
 
         wrapper_store_pdf(plot_increments_in_time, filepath)
-
-    def _merge_pdf(self, fig, final_path):
-        tmp_path = os.path.join(DIRS['result'], 'tmp.pdf')
-        final_path = os.path.join(DIRS['result'], final_path)
-        merged_filepath = os.path.join(DIRS['result'], 'merged.pdf')
-
-        pdf = PdfPages(tmp_path)
-        pdf.savefig(fig)
-        pdf.close()
-        output = PdfFileWriter()
-        pdf1 = PdfFileReader(open(tmp_path, "rb"))
-
-        for page in pdf1.pages:
-            output.addPage(page)
-        try:
-            pdf2 = PdfFileReader(open(final_path, "rb"))
-            for page in pdf2.pages:
-                output.addPage(page)
-        except FileNotFoundError:
-            pass
-
-        outfile = open(merged_filepath, "wb")
-        output.write(outfile)
-        outfile.close()
-        os.rename(merged_filepath, final_path)
-        os.remove(tmp_path)
 
     def _set_subplot_prop(self, ax, title):
         ax.set_facecolor("white")

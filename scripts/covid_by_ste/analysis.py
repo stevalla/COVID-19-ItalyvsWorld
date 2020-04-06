@@ -12,34 +12,34 @@ log = logging.getLogger(__name__)
 def run():
     analyzer = CovidAnalyzer([DATA])
     plotter = Plotter(analyzer.data)
+
+    log.info('>>> Logistic curve at {}'.format(yesterday()))
+    plotter.plot_logistic_curve(analyzer.data)
+
+    log.info('>>> Generating grow rates...')
+    grow_rates = analyzer.grow_rates_per_country()
+    plotter.plot_grow_rate_per_country(grow_rates)
+
+    log.info('>>> Generating increments in time with moving average...')
+    inc_in_time, mas = analyzer.increments_in_time()
+    plotter.increments_in_time(inc_in_time, mas)
+
+    log.info('>>> Plotting histograms per country at {}'.format(yesterday()))
+    hist_data = analyzer.histograms_per_country()
+    plotter.histograms(hist_data)
+
     plotter_geo = PlotterGeo(analyzer.data)
-
-    # log.info('>>> Logistic curve at {}'.format(yesterday()))
-    # plotter.plot_logistic_curve(analyzer.data)
-
-    # log.info('>>> Generating grow rates...')
-    # grow_rates = analyzer.grow_rates_per_country()
-    # plotter.plot_grow_rate_per_country(grow_rates)
-    #
-    # log.info('>>> Generating increments in time with moving average...')
-    # inc_in_time, mas = analyzer.increments_in_time()
-    # plotter.increments_in_time(inc_in_time, mas)
-    #
-    # log.info('>>> Plotting histograms per country at {}'.format(yesterday()))
-    # hist_data = analyzer.histograms_per_country()
-    # plotter.histograms(hist_data)
-    #
     log.info(">>> Update world map")
     data = analyzer.world_map()
     plotter_geo.plot_map(data)
 
-    # analyzer = CovidAnalyzer([ITALY_DATA])
-    # log.info(">>> Italy analysis")
-    # data = analyzer.data
-    # rgr = Regressor(data['tamponi'], data['totale_casi'])
-    # rgr = rgr.fit()
-    # log.info("Plotting Italy confirmed trend over the number of daily swabs")
-    # plotter.scatter_swabs(data, rgr.predict(data['tamponi']))
+    analyzer = CovidAnalyzer([ITALY_DATA])
+    log.info(">>> Italy analysis")
+    data = analyzer.data
+    rgr = Regressor(data['tamponi'], data['totale_casi'])
+    rgr = rgr.fit()
+    log.info("Plotting Italy confirmed trend over the number of daily swabs")
+    plotter.scatter_swabs(data, rgr.predict(data['tamponi']))
 
 
 if __name__ == '__main__':

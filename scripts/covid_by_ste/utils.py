@@ -3,8 +3,9 @@ import warnings
 import logging.config
 import matplotlib.style
 
+from PyPDF2 import PdfFileReader, PdfFileWriter
 from matplotlib.backends.backend_pdf import PdfPages
-from definitions import SCRIPTS_DIR, yesterday
+from definitions import SCRIPTS_DIR, DIRS, yesterday
 
 # WARNINGS
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -23,3 +24,27 @@ def wrapper_store_pdf(fun, filename, *args, **kwargs):
         fun(pdf, *args, **kwargs)
         d = pdf.infodict()
         d['Title'] = 'Histograms at {}'.format(yesterday())
+
+
+def merge_pdf(final_path):
+    tmp_path = os.path.join(DIRS['result'], 'tmp.pdf')
+    final_path = os.path.join(DIRS['result'], final_path)
+    merged_filepath = os.path.join(DIRS['result'], 'merged.pdf')
+
+    output = PdfFileWriter()
+    pdf1 = PdfFileReader(open(tmp_path, "rb"))
+
+    for page in pdf1.pages:
+        output.addPage(page)
+    try:
+        pdf2 = PdfFileReader(open(final_path, "rb"))
+        for page in pdf2.pages:
+            output.addPage(page)
+    except FileNotFoundError:
+        pass
+
+    outfile = open(merged_filepath, "wb")
+    output.write(outfile)
+    outfile.close()
+    os.rename(merged_filepath, final_path)
+    os.remove(tmp_path)
