@@ -1,11 +1,5 @@
 # COVID-19 Italy and World
 
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-    <div>
-        
-                <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-
 ## Cumulative distribution in the world
 ![Cumulative Distributions at 2020-03-19](results/logistic_curves.png)
 
