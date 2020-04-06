@@ -29,4 +29,5 @@ how well they fit the data.
 
 - **geo:** Geographical plots to visualize the spread of the virus around the
 world.
+
 For more information about the results see the README inside each folder.
