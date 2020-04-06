@@ -3,7 +3,7 @@ import logging
 
 import numpy as np
 import plotly.graph_objs as go
-import chart_studio.plotly as py
+import chart_studio.plotly as cs
 
 from utils import merge_pdf
 from definitions import COUNTRY, STATE, DIRS, STATUS_TYPES, yesterday
@@ -107,7 +107,7 @@ class PlotterGeo:
         merge_pdf('world_map_3d.pdf')
         os.rename(os.path.join(DIRS['result'], 'world_map_3d.pdf'),
                   os.path.join(DIRS['result'], 'geo/world_map_3d.pdf'))
-        url = py.plot(fig, filename='privacy-public', sharing='public',
+        url = cs.plot(fig, filename='privacy-public', sharing='public',
                       auto_open=False)
         log.info('World map at ', url)
 

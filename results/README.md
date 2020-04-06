@@ -23,4 +23,10 @@ of confirmed and deaths for each country in the dataset.
 - **logistic_curves:** Archives of old cumulative curve of confirmed
 and deaths in all the world.
 
+- **moving_average:** Distribution of increments in time
+for each country. We also plot the moving average at 5 and 10 days to see
+how well they fit the data.
+
+- **geo:** Geographical plots to visualize the spread of the virus around the
+world.
 For more information about the results see the README inside each folder.
