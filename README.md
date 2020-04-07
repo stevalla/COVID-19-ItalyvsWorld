@@ -1,6 +1,10 @@
+<link href="readme.css" rel="stylesheet">
+
 # COVID-19 Italy and World
 
-![](results/geo/world_map_2d.png)
+<div style="text-align:center">
+    <img width="auto" height="auto" src="results/geo/world_map_2d.png" alt="">
+</div>
 
 
 This repository has been created with the aim to perform some analysis with
