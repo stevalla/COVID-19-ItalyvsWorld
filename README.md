@@ -3,7 +3,7 @@
 # COVID-19 Italy and World
 
 <p align="center">
-    <img width="600" height="350" src="results/geo/world_map_2d.png" alt="">
+    <img width="800" height="500" src="results/geo/world_map_2d.png" alt="">
 </p>
 
 
