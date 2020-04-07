@@ -1,9 +1,7 @@
-<link href="readme.css" rel="stylesheet">
-
 # COVID-19 Italy and World
 
 <p align="center">
-    <img width="800" height="500" src="results/geo/world_map_2d.png" alt="">
+    <img width="1000" height="750" src="results/geo/world_map_2d.png" alt="">
 </p>
 
 
