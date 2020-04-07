@@ -108,8 +108,7 @@ class PlotterGeo:
             transition=dict(duration=0.5)
         )
         fig.update_yaxes(automargin=True)
-        fig.show()
-        # url = self._store_result(fig, 'world_map_3d', 'html')
+        url = self._store_result(fig, 'world_map_3d', 'html')
         log.info('World map 3D at {}'.format(url))
 
     def plot_world_map(self, world_data):
