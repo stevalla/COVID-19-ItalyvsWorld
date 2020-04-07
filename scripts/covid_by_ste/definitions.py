@@ -1,6 +1,6 @@
 import os
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 # DIRECTORIES
 ROOT_DIR = os.path.dirname(
@@ -29,5 +29,10 @@ KernelEstimationError = (ValueError, ZeroDivisionError, RuntimeError)
 
 
 # UTILITIES
-def yesterday():
-    return date.today() - timedelta(days=1)
+def yesterday(ts=False):
+    if ts:
+        date_ = datetime.now() - timedelta(days=1)
+        date_ = date_.strftime("%m/%d/%Y %I:%M:%S %p")
+        return date_
+    else:
+        return date.today() - timedelta(days=1)

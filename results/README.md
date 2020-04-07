@@ -1,5 +1,8 @@
 # Analysis results
 
+## Cumulative distribution in the world
+![Cumulative Distributions at 2020-03-19](logistic_curves.png)
+
 In this folder are stored all our analysis results. 
 
 You can find:

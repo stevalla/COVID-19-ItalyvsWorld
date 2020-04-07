@@ -13,9 +13,15 @@ def run():
     analyzer = CovidAnalyzer([DATA])
     plotter = Plotter(analyzer.data)
 
+    # ############################################################################
+    # #                          LOGISTIC_CURVE                                  #
+    # ############################################################################
     # log.info('>>> Logistic curve at {}'.format(yesterday()))
     # plotter.plot_logistic_curve(analyzer.data)
     #
+    # ############################################################################
+    # #                                GROWTH                                    #
+    # ############################################################################
     # log.info('>>> Generating grow rates...')
     # grow_rates = analyzer.grow_rates_per_country()
     # plotter.plot_grow_rate_per_country(grow_rates)
@@ -24,15 +30,27 @@ def run():
     # inc_in_time, mas = analyzer.increments_in_time()
     # plotter.increments_in_time(inc_in_time, mas)
     #
+    # ############################################################################
+    # #                               HISTOGRAMS                                 #
+    # ############################################################################
     # log.info('>>> Plotting histograms per country at {}'.format(yesterday()))
     # hist_data = analyzer.histograms_per_country()
     # plotter.histograms(hist_data)
 
+    ############################################################################
+    #                                  GEO                                     #
+    ############################################################################
     plotter_geo = PlotterGeo(analyzer.data)
-    log.info(">>> Update world map")
     data = analyzer.world_map()
-    plotter_geo.plot_map(data)
+    log.info(">>> Update 3D world map")
+    plotter_geo.plot_world_map_3d(data)
 
+    # log.info(">>> Update 2D world map")
+    # plotter_geo.plot_world_map(data)
+    #
+    # ############################################################################
+    # #                                 ITALY                                    #
+    # ############################################################################
     # analyzer = CovidAnalyzer([ITALY_DATA])
     # log.info(">>> Italy analysis")
     # data = analyzer.data
@@ -43,5 +61,5 @@ def run():
 
 
 if __name__ == '__main__':
-    log.info('{0:} Starting analysis {0:}'.format('='*80))
+    log.info('{0:} Starting analysis {0:}'.format('=' * 80))
     run()

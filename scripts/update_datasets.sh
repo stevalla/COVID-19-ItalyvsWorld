@@ -41,3 +41,6 @@ for country in "${datasets[@]}"; do
     rm -r "$folder"/${country}_data
     rm -r "$folder"/../data/"$country"
 done
+
+# Update readme date update
+sed -i 's/\(LAST UPDATE:\).*\( 06:00 UTC-00\)/\1 ${yesterday}\2/g' README.md
