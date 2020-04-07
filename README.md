@@ -2,9 +2,9 @@
 
 # COVID-19 Italy and World
 
-<div style="text-align:center">
-    <img width="auto" height="auto" src="results/geo/world_map_2d.png" alt="">
-</div>
+<p align="center">
+    <img src="results/geo/world_map_2d.png" alt="">
+</p>
 
 
 This repository has been created with the aim to perform some analysis with
