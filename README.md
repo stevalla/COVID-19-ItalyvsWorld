@@ -1,5 +1,7 @@
 # COVID-19 Italy and World
 
+## Active cases in the world
+
 <p align="center">
     <img width="1000" height="750" src="results/geo/world_map_2d.png" alt="">
 </p>

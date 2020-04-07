@@ -33,3 +33,16 @@ class DataPreprocessing:
         df[col] = df[col].fillna(-1)
         return df
 
+    def calculate_active_cases(self):
+        data = self.preprocessed
+        actives = []
+        for i, day in enumerate(data['date'].unique()):
+            data_day = data[data['date'] == day]
+            if i < 20:
+                actives.append(data_day['confirmed'] - data_day['deaths'])
+            else:
+                data_recovered = data['date'].values[i - 20]['confirmed']
+                actives.append(data_day['confirmed'] - data_recovered
+                               - data_day['deaths'])
+        data['active'] = actives
+        self.preprocessed = data

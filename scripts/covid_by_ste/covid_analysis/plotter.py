@@ -195,7 +195,7 @@ class Plotter:
         merge_pdf('world_swabs_vs_confirmed.pdf')
 
     def increments_in_time(self, increments, mas):
-        filename = 'moving_avg/5ma_{}.pdf'.format(yesterday())
+        filename = 'moving_avg/ma_{}.pdf'.format(yesterday())
         filepath = os.path.join(DIRS['result'], filename)
         legend_text = ['5-days exponential moving average',
                        '10-days exponential moving average',
