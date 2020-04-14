@@ -165,7 +165,7 @@ class Plotter:
         ax.set_prop_cycle(c)
         for i, region in enumerate(regions):
             data = italy_data[italy_data['codice_regione'] == region]
-            ax.plot(data['tamponi'], data['totale_casi'],
+            ax.plot(data['tamponi'], data['confirmed'],
                     marker=markers[i % 10], ms=10)
         plt.plot(italy_data['tamponi'], rgr_line, color='black', lw=2)
 
