@@ -34,7 +34,7 @@ def wrapper_store_pdf(fun, filename, *args, **kwargs):
     with PdfPages(filename) as pdf:
         fun(pdf, *args, **kwargs)
         d = pdf.infodict()
-        d['Title'] = 'Histograms at {}'.format(yesterday())
+        d['Title'] = 'Plotted at {}'.format(yesterday())
 
 
 def merge_pdf(final_path):

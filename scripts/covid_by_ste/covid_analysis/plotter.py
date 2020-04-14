@@ -36,13 +36,12 @@ class Plotter:
 
         def plot_grow_rates(pdf):
             for country in list(series.values())[0].columns:
-                fig, ax = plt.subplots(figsize=(20, 5))
                 data = {s: series[s][country].copy() for s in STATUS_TYPES}
-
                 if country not in first or any(len(data[s][first[country]:])
                                                <= 1 for s in STATUS_TYPES):
                     continue
 
+                fig, ax = plt.subplots(figsize=(20, 5))
                 for status, df in data.items():
                     df.fillna(0, inplace=True)
                     df = df[first[country]:]
@@ -115,7 +114,7 @@ class Plotter:
                              facecolor='white', bbox_to_anchor=(1, -.15))
         first_occs = self._get_day_first_occurrence(status_dict)
 
-        def _plot_histograms(pdf):
+        def plot_histograms(pdf):
             last_obs = None
 
             for c in countries:
@@ -149,7 +148,7 @@ class Plotter:
                 pdf.savefig(fig)
                 plt.close(fig)
 
-        wrapper_store_pdf(_plot_histograms, filename)
+        wrapper_store_pdf(plot_histograms, filename)
 
     def scatter_swabs(self, italy_data, rgr_line):
         fig, ax = plt.subplots(figsize=(15, 8))

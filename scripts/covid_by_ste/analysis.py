@@ -25,11 +25,11 @@ def run():
     log.info('>>> Generating grow rates...')
     grow_rates = analyzer.grow_rates_per_country()
     plotter.plot_grow_rate_per_country(grow_rates)
-    
+
     log.info('>>> Generating increments in time with moving average...')
     inc_in_time, mas = analyzer.increments_in_time()
     plotter.increments_in_time(inc_in_time, mas)
-    
+
     ############################################################################
     #                               HISTOGRAMS                                 #
     ############################################################################
@@ -44,13 +44,13 @@ def run():
     data = analyzer.world_map()
     log.info(">>> Update 3D world map")
     plotter_geo.plot_world_map_3d(data)
-    
+
     log.info(">>> Update 2D world map")
     plotter_geo.plot_world_map(data)
 
-    ############################################################################
-    #                                 ITALY                                    #
-    ############################################################################
+    ###########################################################################
+    #                                ITALY                                    #
+    ###########################################################################
     analyzer = CovidAnalyzer([ITALY_DATA])
     log.info(">>> Italy analysis")
     data = analyzer.data

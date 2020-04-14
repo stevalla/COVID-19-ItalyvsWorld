@@ -78,12 +78,10 @@ class CovidAnalyzer:
         grow_rate = np.zeros(serie.shape)
         values = serie.values
         for day in range(1, serie.shape[0]):
-            try:
+            with np.errstate(divide='ignore', invalid='ignore'):
                 grow_rate[day] = abs(np.divide(values[day] - values[day - 1],
                                                values[day - 1]) * 100)
-            except RuntimeWarning:
-                grow_rate[day] = np.inf
-        grow_rate[np.isinf(grow_rate)] = np.nan
+        grow_rate[np.isin(grow_rate)] = np.nan
         res = pd.DataFrame(grow_rate, columns=serie.columns, index=serie.index)
         return res
 
