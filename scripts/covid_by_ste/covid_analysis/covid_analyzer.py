@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+import copy
 from datetime import timedelta
 from definitions import STATUS_TYPES, COUNTRY, STATE, yesterday
 from covid_analysis.data_handler.dataset_factory import DatasetFactory
@@ -67,20 +67,22 @@ class CovidAnalyzer:
 
     def _calculate_increment_per_day(self, series):
         increments = np.zeros(series.shape)
-        values = series.values
+        values = series.values.copy()
         for day in range(1, series.shape[0]):
             increments[day] = values[day] - values[day - 1]
-        res = pd.DataFrame(increments, columns=series.
-                           columns, index=series.index)
+        res = pd.DataFrame(increments, columns=series.columns,
+                           index=series.index)
         return res
 
     def _calculate_grow_rate(self, serie):
         grow_rate = np.zeros(serie.shape)
         values = serie.values
         for day in range(1, serie.shape[0]):
-            np.seterr(all='ignore')
-            grow_rate[day] = abs(np.divide(values[day] - values[day - 1],
-                                           values[day - 1]) * 100)
+            try:
+                grow_rate[day] = abs(np.divide(values[day] - values[day - 1],
+                                               values[day - 1]) * 100)
+            except RuntimeWarning:
+                grow_rate[day] = np.inf
         grow_rate[np.isinf(grow_rate)] = np.nan
         res = pd.DataFrame(grow_rate, columns=serie.columns, index=serie.index)
         return res

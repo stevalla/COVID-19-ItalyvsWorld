@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 
 from covid_analysis.data_handler.dataset import Dataset
-from definitions import DATA_DIR, VALID_DATASETS
+from definitions import DATA_DIR, VALID_DATASETS, STATUS_TYPES
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +19,11 @@ class DatasetFactory:
         return self._dataset.get_data()['date'].unique()
 
     def get_data(self, raw=False):
-        return self._dataset.get_data(raw)
+        data = self._dataset.get_data(raw)
+        # delete inconsistent values
+        for s in STATUS_TYPES:
+            data = data[data[s] >= 0]
+        return data
 
     def merge_datasets(self, datasets):
         """ Take a list of datasets and merge it together by rows. We assume

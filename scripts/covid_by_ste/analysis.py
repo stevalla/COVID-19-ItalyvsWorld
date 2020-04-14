@@ -13,40 +13,40 @@ def run():
     analyzer = CovidAnalyzer([DATA])
     plotter = Plotter(analyzer.data)
 
-    ############################################################################
-    #                          LOGISTIC_CURVE                                  #
-    ############################################################################
-    log.info('>>> Logistic curve at {}'.format(yesterday()))
-    plotter.plot_logistic_curve(analyzer.data)
-
+    # ############################################################################
+    # #                          LOGISTIC_CURVE                                  #
+    # ############################################################################
+    # log.info('>>> Logistic curve at {}'.format(yesterday()))
+    # plotter.plot_logistic_curve(analyzer.data)
+    #
     ############################################################################
     #                                GROWTH                                    #
     ############################################################################
-    log.info('>>> Generating grow rates...')
-    grow_rates = analyzer.grow_rates_per_country()
-    plotter.plot_grow_rate_per_country(grow_rates)
-
-    log.info('>>> Generating increments in time with moving average...')
-    inc_in_time, mas = analyzer.increments_in_time()
-    plotter.increments_in_time(inc_in_time, mas)
-
-    ############################################################################
-    #                               HISTOGRAMS                                 #
-    ############################################################################
-    log.info('>>> Plotting histograms per country at {}'.format(yesterday()))
-    hist_data = analyzer.histograms_per_country()
-    plotter.histograms(hist_data)
+    # log.info('>>> Generating grow rates...')
+    # grow_rates = analyzer.grow_rates_per_country()
+    # plotter.plot_grow_rate_per_country(grow_rates)
+    #
+    # log.info('>>> Generating increments in time with moving average...')
+    # inc_in_time, mas = analyzer.increments_in_time()
+    # plotter.increments_in_time(inc_in_time, mas)
+    #
+    # ############################################################################
+    # #                               HISTOGRAMS                                 #
+    # ############################################################################
+    # log.info('>>> Plotting histograms per country at {}'.format(yesterday()))
+    # hist_data = analyzer.histograms_per_country()
+    # plotter.histograms(hist_data)
 
     ############################################################################
     #                                  GEO                                     #
     ############################################################################
-    plotter_geo = PlotterGeo(analyzer.data)
-    data = analyzer.world_map()
-    log.info(">>> Update 3D world map")
-    plotter_geo.plot_world_map_3d(data)
-
-    log.info(">>> Update 2D world map")
-    plotter_geo.plot_world_map(data)
+    # plotter_geo = PlotterGeo(analyzer.data)
+    # data = analyzer.world_map()
+    # log.info(">>> Update 3D world map")
+    # plotter_geo.plot_world_map_3d(data)
+    #
+    # log.info(">>> Update 2D world map")
+    # plotter_geo.plot_world_map(data)
 
     ############################################################################
     #                                 ITALY                                    #

@@ -40,8 +40,8 @@ class Dataset:
 
     def get_data(self, raw=False):
         if raw:
-            return self._raw_data
-        return self._data
+            return self._raw_data.copy()
+        return self._data.copy()
 
     def _load_data(self, filepath):
         def date_parser(x):

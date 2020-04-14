@@ -47,7 +47,6 @@ def preprocess_data():
         total = pd.concat([total, *[data[data['date'] == d] for data in all_data
                                     if d in data['date'].values]])
 
-    total = total.sort_values(['date', 'Country/Region'])
     log.info('Update success. Checking consistency...')
     # assert all columns equal
     for data in all_data:

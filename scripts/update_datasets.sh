@@ -43,4 +43,4 @@ for country in "${datasets[@]}"; do
 done
 
 # Update readme date update
-sed -i 's/\(LAST UPDATE:\).*\( 06:00 UTC-00\)/\1 ${yesterday}\2/g' README.md
+sed -i "s/\(LAST UPDATE:\).*\( 06:00 UTC-00\)/\1 ${yesterday}\2/g" README.md

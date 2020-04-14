@@ -27,6 +27,8 @@ class ItalyPreprocessing(DataPreprocessing):
 
         data['data'] = dates
         data.drop(['note_en', 'note_it'], inplace=True, axis=1)
+        data.rename(columns={'totale_casi': 'confirmed', 'deceduti': 'deaths'},
+                    inplace=True)
         self.preprocessed = pd.concat([self.preprocessed, data])
         self._integer_with_nan()
         self.preprocessed = self._fix_provinces(self.preprocessed)
@@ -38,8 +40,8 @@ class ItalyPreprocessing(DataPreprocessing):
         if self.preprocessed.empty:
             raise ValueError("Preprocessed data empty")
         mapping = {'Province/State': 'denominazione_regione', 'iso3': 'stato',
-                   'Lat': 'lat', 'Long': 'long', 'deaths': 'deceduti',
-                   'confirmed': 'totale_casi'}
+                   'Lat': 'lat', 'Long': 'long', 'deaths': 'deaths',
+                   'confirmed': 'confirmed'}
         data_ = self.preprocessed.copy()
         data = pd.DataFrame({c: data_[k] for c, k in mapping.items()})
         data['Country/Region'] = 'Italy'
@@ -76,7 +78,7 @@ class ItalyPreprocessing(DataPreprocessing):
         return new_data
 
     def _integer_with_nan(self):
-        for col in ['deceduti', 'totale_casi']:
+        for col in ['deaths', 'confirmed']:
             self.preprocessed = super().fillnan(self.preprocessed, col)
             assert not self.preprocessed[col].isnull().values.any()
 
