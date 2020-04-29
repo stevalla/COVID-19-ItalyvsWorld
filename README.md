@@ -19,6 +19,6 @@ Our first intent is to practice on statistical analysis. At first, We will focus
 only on COVID data, then we would like to add other datasets that are likely
 correlated with the virus phenomena, e.g. pollution and economic data.
 
-LAST UPDATE: 2020-04-26 06:00 UTC-00
+LAST UPDATE: 2020-04-28 06:00 UTC-00
 
 Contributors: Andrea Aquilino, Stefano Valladares
